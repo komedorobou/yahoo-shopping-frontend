@@ -117,8 +117,8 @@ async function startBatchSearch() {
             // 統計更新
             updateStats(completed, csvData.length);
 
-            // API制限対策: 1秒待機
-            await sleep(1000);
+            // API制限対策: 2秒待機 (Yahoo API: 30req/min制限)
+            await sleep(2000);
         }
 
         // 完了メッセージ
@@ -196,6 +196,14 @@ async function searchYahooShopping(item) {
 
         if (!response.ok) {
             console.error(`API Error: ${response.status}`);
+
+            // 429エラー（レート制限）の場合は60秒待機してリトライ
+            if (response.status === 429) {
+                console.warn('Rate limit exceeded. Waiting 60 seconds...');
+                await sleep(60000);
+                return searchYahooShopping(item); // リトライ
+            }
+
             return [];
         }
 
