@@ -119,6 +119,12 @@ async function startBatchSearch() {
 
             // API制限対策: 2秒待機 (Yahoo API: 30req/min制限)
             await sleep(2000);
+
+            // 29個目で追加5秒待機（次の1分枠に入るため）
+            if (completed % 29 === 0) {
+                console.log(`29個処理完了。追加5秒待機...`);
+                await sleep(5000);
+            }
         }
 
         // 完了メッセージ
