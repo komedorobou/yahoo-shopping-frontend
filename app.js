@@ -1,45 +1,35 @@
 // グローバル変数
 let yahooApiKey = null;
-let csvData = [];
+let csvFile = null;
 let searchResults = [];
 
-// DOM要素
-const apiKeyModal = document.getElementById('apiKeyModal');
-const apiKeyInput = document.getElementById('apiKeyInput');
-const saveApiKeyBtn = document.getElementById('saveApiKey');
-const mainContent = document.getElementById('mainContent');
-const settingsBtn = document.getElementById('settingsBtn');
-const csvFileInput = document.getElementById('csvFile');
-const csvStatus = document.getElementById('csvStatus');
-const startSearchBtn = document.getElementById('startSearch');
-const progressSection = document.getElementById('progressSection');
-const progressBar = document.getElementById('progressBar');
-const progressText = document.getElementById('progressText');
-const resultsSection = document.getElementById('resultsSection');
-const resultsStats = document.getElementById('resultsStats');
-const resultsContainer = document.getElementById('resultsContainer');
-const exportResultsBtn = document.getElementById('exportResults');
-const minProfitMarginInput = document.getElementById('minProfitMargin');
-const maxSearchItemsInput = document.getElementById('maxSearchItems');
-const resultsPerItemInput = document.getElementById('resultsPerItem');
+// ネオンライン生成
+function createNeonLines() {
+    const container = document.getElementById('neonLines');
+    for (let i = 0; i < 5; i++) {
+        const line = document.createElement('div');
+        line.className = 'neon-line';
+        line.style.left = Math.random() * 100 + '%';
+        line.style.animationDelay = Math.random() * 10 + 's';
+        line.style.opacity = Math.random() * 0.5 + 0.1;
+        container.appendChild(line);
+    }
+}
+createNeonLines();
 
 // 初期化
 document.addEventListener('DOMContentLoaded', () => {
     // LocalStorageからAPIキーを取得
     yahooApiKey = localStorage.getItem('yahooApiKey');
 
-    if (yahooApiKey) {
-        apiKeyModal.style.display = 'none';
-        mainContent.style.display = 'block';
-    } else {
-        apiKeyModal.style.display = 'flex';
-        mainContent.style.display = 'none';
+    if (!yahooApiKey) {
+        document.getElementById('apiKeyModal').style.display = 'flex';
     }
 });
 
 // APIキー保存
-saveApiKeyBtn.addEventListener('click', () => {
-    const key = apiKeyInput.value.trim();
+document.getElementById('saveApiKey').addEventListener('click', () => {
+    const key = document.getElementById('apiKeyInput').value.trim();
     if (key.length < 10) {
         alert('正しいAPIキーを入力してください');
         return;
@@ -47,40 +37,109 @@ saveApiKeyBtn.addEventListener('click', () => {
 
     yahooApiKey = key;
     localStorage.setItem('yahooApiKey', key);
-    apiKeyModal.style.display = 'none';
-    mainContent.style.display = 'block';
+    document.getElementById('apiKeyModal').style.display = 'none';
 });
 
 // 設定ボタン
-settingsBtn.addEventListener('click', () => {
-    apiKeyModal.style.display = 'flex';
-    apiKeyInput.value = yahooApiKey;
+document.getElementById('settingsBtn').addEventListener('click', () => {
+    document.getElementById('apiKeyModal').style.display = 'flex';
+    document.getElementById('apiKeyInput').value = yahooApiKey || '';
 });
 
-// CSVファイル読み込み
-csvFileInput.addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+// CSVファイル選択
+function handleFileSelect(input) {
+    csvFile = input.files[0];
+    if (csvFile) {
+        document.getElementById('fileName').textContent = `✅ ${csvFile.name}`;
+        document.getElementById('batchSearchBtn').disabled = false;
+    }
+}
+
+// CSVファイルインプットにイベントリスナー追加
+document.getElementById('csvFile').addEventListener('change', function() {
+    handleFileSelect(this);
+});
+
+// 検索開始
+async function startBatchSearch() {
+    if (!yahooApiKey) {
+        alert('Yahoo API Keyを設定してください');
+        document.getElementById('apiKeyModal').style.display = 'flex';
+        return;
+    }
+
+    if (!csvFile) {
+        alert('CSVファイルを選択してください');
+        return;
+    }
+
+    const resultsDiv = document.getElementById('searchResults');
+    resultsDiv.innerHTML = `
+        <div class="loading-container">
+            <div class="spinner"></div>
+            <div class="loading-text">ANALYZING...</div>
+            <div class="loading-subtext">AIが最適な利益商品を検出中</div>
+        </div>
+    `;
+
+    document.getElementById('stats').style.display = 'grid';
+    searchResults = [];
 
     try {
-        const text = await file.text();
-        csvData = parseCSV(text);
+        // CSVを読み込み
+        const text = await csvFile.text();
+        const csvData = parseCSV(text);
 
         if (csvData.length === 0) {
             throw new Error('CSVデータが空です');
         }
 
-        csvStatus.className = 'status success';
-        csvStatus.textContent = `✓ ${csvData.length}件の商品を読み込みました`;
-        startSearchBtn.disabled = false;
-    } catch (error) {
-        csvStatus.className = 'status error';
-        csvStatus.textContent = `✗ エラー: ${error.message}`;
-        startSearchBtn.disabled = true;
-    }
-});
+        // 検索実行
+        let completed = 0;
+        const resultsContainer = document.createElement('div');
+        resultsContainer.className = 'results-container';
+        resultsDiv.innerHTML = '';
+        resultsDiv.appendChild(resultsContainer);
 
-// CSV パース (BOM対応)
+        for (const item of csvData) {
+            completed++;
+
+            // 検索実行
+            const results = await searchYahooShopping(item);
+
+            if (results.length > 0) {
+                searchResults.push(...results);
+                results.forEach(result => {
+                    appendResultCard(resultsContainer, result);
+                });
+            }
+
+            // 統計更新
+            updateStats(completed, csvData.length);
+
+            // API制限対策: 1秒待機
+            await sleep(1000);
+        }
+
+        // 完了メッセージ
+        if (searchResults.length === 0) {
+            resultsDiv.innerHTML = `
+                <div class="message error-message">
+                    利益商品が見つかりませんでした
+                </div>
+            `;
+        }
+
+    } catch (error) {
+        resultsDiv.innerHTML = `
+            <div class="message error-message">
+                エラー: ${error.message}
+            </div>
+        `;
+    }
+}
+
+// CSV パース
 function parseCSV(text) {
     // BOM除去
     if (text.charCodeAt(0) === 0xFEFF) {
@@ -100,7 +159,7 @@ function parseCSV(text) {
         const item = columns[1]?.trim();
         const priceStr = columns[3]?.trim();
 
-        if (!brand || !item || !priceStr) continue;
+        if (!brand || !priceStr) continue;
 
         // 価格から数字のみ抽出
         const price = parseInt(priceStr.replace(/[^0-9]/g, ''));
@@ -109,7 +168,7 @@ function parseCSV(text) {
 
         data.push({
             brand,
-            item,
+            item: item || brand,
             originalPrice: price
         });
     }
@@ -117,48 +176,10 @@ function parseCSV(text) {
     return data;
 }
 
-// 検索開始
-startSearchBtn.addEventListener('click', async () => {
-    const minProfit = parseInt(minProfitMarginInput.value) || 40;
-    const maxItems = parseInt(maxSearchItemsInput.value) || 20;
-    const resultsPerItem = parseInt(resultsPerItemInput.value) || 5;
-
-    searchResults = [];
-    startSearchBtn.disabled = true;
-    progressSection.style.display = 'block';
-    resultsSection.style.display = 'none';
-
-    const itemsToSearch = csvData.slice(0, maxItems);
-
-    for (let i = 0; i < itemsToSearch.length; i++) {
-        const item = itemsToSearch[i];
-
-        // 進捗更新
-        const progress = ((i + 1) / itemsToSearch.length) * 100;
-        progressBar.style.width = `${progress}%`;
-        progressText.textContent = `${i + 1} / ${itemsToSearch.length}`;
-
-        try {
-            const results = await searchYahooShopping(item, minProfit, resultsPerItem);
-            searchResults.push(...results);
-        } catch (error) {
-            console.error(`検索エラー (${item.brand} ${item.item}):`, error);
-        }
-
-        // API制限対策: 1秒待機
-        await sleep(1000);
-    }
-
-    // 検索完了
-    progressSection.style.display = 'none';
-    displayResults();
-    startSearchBtn.disabled = false;
-});
-
 // Yahoo Shopping API検索
-async function searchYahooShopping(item, minProfitMargin, maxResults) {
-    const query = `${item.brand} ${item.item}`;
-    const maxPrice = Math.floor(item.originalPrice * (1 - minProfitMargin / 100));
+async function searchYahooShopping(item) {
+    const query = `${item.brand} ${item.item || ''}`.trim();
+    const maxPrice = Math.floor(item.originalPrice * 0.6); // 40%利益 = 60%価格
 
     const params = new URLSearchParams({
         appid: yahooApiKey,
@@ -174,7 +195,8 @@ async function searchYahooShopping(item, minProfitMargin, maxResults) {
         const response = await fetch(url);
 
         if (!response.ok) {
-            throw new Error(`API Error: ${response.status}`);
+            console.error(`API Error: ${response.status}`);
+            return [];
         }
 
         const data = await response.json();
@@ -188,10 +210,9 @@ async function searchYahooShopping(item, minProfitMargin, maxResults) {
         for (const hit of data.hits) {
             // ブランド名チェック
             const itemName = (hit.name || '').toLowerCase();
-            const description = (hit.description || '').toLowerCase();
             const brandName = item.brand.toLowerCase();
 
-            if (!itemName.includes(brandName) && !description.includes(brandName)) {
+            if (!itemName.includes(brandName)) {
                 continue;
             }
 
@@ -199,24 +220,23 @@ async function searchYahooShopping(item, minProfitMargin, maxResults) {
             const profitMargin = ((item.originalPrice - hit.price) / item.originalPrice) * 100;
             const profit = item.originalPrice - hit.price;
 
-            if (profitMargin < minProfitMargin) {
+            if (profitMargin < 40) {
                 continue;
             }
 
             results.push({
-                brand: item.brand,
-                originalItem: item.item,
-                originalPrice: item.originalPrice,
-                name: hit.name,
+                productName: hit.name,
                 price: hit.price,
+                originalPrice: item.originalPrice,
                 profit: profit,
                 profitMargin: Math.floor(profitMargin),
                 image: hit.image?.medium || hit.image?.small || '',
                 url: hit.url,
-                description: hit.description || ''
+                shop: hit.seller?.name || 'ストア名不明',
+                stock: hit.inStock !== false ? '在庫あり' : '在庫状況不明'
             });
 
-            if (results.length >= maxResults) {
+            if (results.length >= 5) {
                 break;
             }
         }
@@ -229,71 +249,62 @@ async function searchYahooShopping(item, minProfitMargin, maxResults) {
     }
 }
 
-// 結果表示
-function displayResults() {
-    if (searchResults.length === 0) {
-        resultsSection.style.display = 'block';
-        resultsStats.textContent = '利益商品が見つかりませんでした';
-        resultsContainer.innerHTML = '';
-        return;
-    }
-
-    // 統計情報
-    const totalProfit = searchResults.reduce((sum, r) => sum + r.profit, 0);
-    const avgProfit = Math.floor(totalProfit / searchResults.length);
-
-    resultsStats.innerHTML = `
-        <strong>${searchResults.length}件</strong>の利益商品を発見 |
-        平均利益: <strong>¥${avgProfit.toLocaleString()}</strong> |
-        合計予想利益: <strong>¥${totalProfit.toLocaleString()}</strong>
-    `;
-
-    // カード表示
-    resultsContainer.innerHTML = searchResults.map(result => `
-        <div class="result-card">
-            <img src="${result.image || 'https://placehold.co/300x200?text=No+Image'}" alt="${result.name}">
-            <div class="result-card-content">
-                <div class="brand">${result.brand} - ${result.originalItem}</div>
-                <h3>${result.name}</h3>
-                <div class="prices">
-                    <span class="price">¥${result.price.toLocaleString()}</span>
-                    <span class="original-price">¥${result.originalPrice.toLocaleString()}</span>
+// 結果カード追加
+function appendResultCard(container, item) {
+    const card = document.createElement('div');
+    card.className = 'result-card';
+    card.innerHTML = `
+        <img src="${item.image || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzUwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzUwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzExMTgyNyIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmaWxsPSIjMDBGRkEzIiBmb250LXNpemU9IjI0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+Tm8gSW1hZ2U8L3RleHQ+PC9zdmc+'}" alt="${item.productName}" class="result-image">
+        <div class="result-content">
+            <div class="result-title">${item.productName}</div>
+            <div class="profit-badge">利益率 ${item.profitMargin || 0}%</div>
+            <div class="price-container">
+                <div class="price-box">
+                    <div class="price-label">Mercari</div>
+                    <div class="price-value mercari-price">¥${(item.originalPrice || 0).toLocaleString()}</div>
                 </div>
-                <div class="profit">
-                    利益: ¥${result.profit.toLocaleString()} (${result.profitMargin}%)
+                <div class="price-box">
+                    <div class="price-label">Yahoo</div>
+                    <div class="price-value yahoo-price">¥${(item.price || 0).toLocaleString()}</div>
                 </div>
-                <a href="${result.url}" target="_blank" class="link-btn">Yahoo!で見る</a>
+                <div class="price-box">
+                    <div class="price-label">Profit</div>
+                    <div class="price-value profit-price">¥${(item.profit || 0).toLocaleString()}</div>
+                </div>
             </div>
+            <div class="shop-info">
+                📍 ${item.shop} | ${item.stock}
+            </div>
+            <a href="${item.url}" target="_blank" class="buy-link">
+                PURCHASE →
+            </a>
         </div>
-    `).join('');
-
-    resultsSection.style.display = 'block';
+    `;
+    container.appendChild(card);
 }
 
-// CSV エクスポート
-exportResultsBtn.addEventListener('click', () => {
-    if (searchResults.length === 0) {
-        alert('エクスポートする結果がありません');
-        return;
+// 統計更新
+function updateStats(completed, total) {
+    document.getElementById('totalSearches').textContent = total;
+    document.getElementById('successfulSearches').textContent = searchResults.length;
+
+    if (searchResults.length > 0) {
+        const avgProfit = Math.floor(
+            searchResults.reduce((sum, item) => sum + (item.profit || 0), 0) / searchResults.length
+        );
+        const avgProfitRate = Math.floor(
+            searchResults.reduce((sum, item) => sum + (item.profitMargin || 0), 0) / searchResults.length
+        );
+
+        document.getElementById('avgProfit').textContent = `¥${avgProfit.toLocaleString()}`;
+        document.getElementById('avgProfitRate').textContent = `${avgProfitRate}%`;
     }
-
-    // CSVヘッダー
-    let csv = 'ブランド,元商品名,メルカリ価格,Yahoo商品名,Yahoo価格,利益,利益率,URL\n';
-
-    // データ行
-    searchResults.forEach(r => {
-        csv += `"${r.brand}","${r.originalItem}",${r.originalPrice},"${r.name.replace(/"/g, '""')}",${r.price},${r.profit},${r.profitMargin}%,"${r.url}"\n`;
-    });
-
-    // ダウンロード
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `profit_items_${new Date().toISOString().slice(0, 10)}.csv`;
-    link.click();
-});
+}
 
 // ユーティリティ
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+// ボタンのクリックイベント
+document.getElementById('batchSearchBtn').addEventListener('click', startBatchSearch);

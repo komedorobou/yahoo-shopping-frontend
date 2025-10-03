@@ -3,77 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yahoo Shopping 利益商品検索ツール</title>
+    <title>PROFIT MATRIX | Advanced Arbitrage System</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- ネオンライン -->
+    <div class="neon-lines" id="neonLines"></div>
+
     <!-- APIキー設定モーダル -->
-    <div id="apiKeyModal" class="modal">
-        <div class="modal-content">
+    <div id="apiKeyModal" class="api-modal" style="display: none;">
+        <div class="api-modal-content">
             <h2>Yahoo Shopping API設定</h2>
             <p>Yahoo Shopping APIのアプリケーションIDを入力してください</p>
-            <a href="https://e.developer.yahoo.co.jp/register" target="_blank" class="link">
+            <a href="https://e.developer.yahoo.co.jp/register" target="_blank" class="api-link">
                 APIキーの取得方法はこちら
             </a>
             <input type="text" id="apiKeyInput" placeholder="dj00aiZpPXXXXXXXXXXX..." />
-            <button id="saveApiKey">保存して開始</button>
-            <p class="note">※ブラウザのLocalStorageに保存されます（サーバーには送信されません）</p>
+            <button id="saveApiKey" class="api-save-btn">保存して開始</button>
+            <p class="api-note">※ブラウザのLocalStorageに保存されます（サーバーには送信されません）</p>
         </div>
     </div>
 
-    <!-- メインコンテンツ -->
-    <div id="mainContent" style="display: none;">
-        <header>
-            <h1>Yahoo Shopping 利益商品検索</h1>
-            <button id="settingsBtn" class="settings-btn">⚙️ 設定</button>
+    <div class="container">
+        <header class="header">
+            <div class="header-badge">Elite Arbitrage System</div>
+            <h1>PROFIT MATRIX</h1>
+            <p>次世代AI搭載 メルカリ×Yahoo!ショッピング 自動利益算出システム</p>
+            <button id="settingsBtn" class="settings-btn">⚙️ API設定</button>
         </header>
 
-        <main>
-            <!-- CSV アップロード -->
-            <section class="upload-section">
-                <h2>1. CSVファイルをアップロード</h2>
-                <p class="instruction">A列:ブランド名、B列:商品名、D列:最頻値価格</p>
-                <input type="file" id="csvFile" accept=".csv" />
-                <div id="csvStatus" class="status"></div>
-            </section>
-
-            <!-- 検索設定 -->
-            <section class="settings-section">
-                <h2>2. 検索条件</h2>
-                <div class="settings-grid">
-                    <div class="setting-item">
-                        <label>最低利益率 (%)</label>
-                        <input type="number" id="minProfitMargin" value="40" min="0" max="100" />
-                    </div>
-                    <div class="setting-item">
-                        <label>最大検索件数 (行)</label>
-                        <input type="number" id="maxSearchItems" value="20" min="1" max="100" />
-                    </div>
-                    <div class="setting-item">
-                        <label>1商品あたりの結果数</label>
-                        <input type="number" id="resultsPerItem" value="5" min="1" max="10" />
+        <!-- CSVアップロードセクション -->
+        <div class="upload-section">
+            <div class="upload-container" onclick="document.getElementById('csvFile').click()">
+                <input type="file" id="csvFile" accept=".csv" style="display: none;">
+                <div class="upload-icon">
+                    <div class="cube-3d">
+                        <div class="cube-face cube-front"></div>
+                        <div class="cube-face cube-back"></div>
+                        <div class="cube-face cube-right"></div>
+                        <div class="cube-face cube-left"></div>
+                        <div class="cube-face cube-top"></div>
+                        <div class="cube-face cube-bottom"></div>
+                        <div class="cube-core"></div>
                     </div>
                 </div>
-                <button id="startSearch" class="primary-btn" disabled>検索開始</button>
-            </section>
-
-            <!-- 進捗表示 -->
-            <section id="progressSection" class="progress-section" style="display: none;">
-                <h2>検索中...</h2>
-                <div class="progress-bar">
-                    <div id="progressBar" class="progress-fill"></div>
+                <div class="upload-text">データファイルをインポート</div>
+                <div class="upload-subtext">CSV形式のメルカリ統合データに対応</div>
+                <div id="fileName"></div>
+                <div class="format-info">
+                    <strong>📋 対応フォーマット</strong><br>
+                    ブランド名 | グループ名 | 価格最頻値<br>
+                    <small>※自動で利益率40%以上の商品を検出</small>
                 </div>
-                <p id="progressText">0 / 0</p>
-            </section>
+            </div>
+            <button id="batchSearchBtn" class="start-button" disabled>
+                EXECUTE ANALYSIS
+            </button>
+        </div>
 
-            <!-- 検索結果 -->
-            <section id="resultsSection" class="results-section" style="display: none;">
-                <h2>利益商品発見</h2>
-                <div id="resultsStats" class="stats"></div>
-                <div id="resultsContainer" class="results-grid"></div>
-                <button id="exportResults" class="export-btn">CSVエクスポート</button>
-            </section>
-        </main>
+        <!-- 統計セクション -->
+        <div class="stats-grid" id="stats" style="display:none;">
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-value" id="totalSearches">0</div>
+                <div class="stat-label">Total Scanned</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💎</div>
+                <div class="stat-value" id="successfulSearches">0</div>
+                <div class="stat-label">Profit Items</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-value" id="avgProfit">¥0</div>
+                <div class="stat-label">Avg Profit</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📈</div>
+                <div class="stat-value" id="avgProfitRate">0%</div>
+                <div class="stat-label">Avg Margin</div>
+            </div>
+        </div>
+
+        <!-- 結果セクション -->
+        <div class="results-section">
+            <h2 class="results-header">High Profit Discoveries</h2>
+            <div id="searchResults">
+                <div class="no-results">
+                    システム待機中... CSVファイルをアップロードして分析を開始
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="app.js"></script>
