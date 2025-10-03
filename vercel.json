@@ -1,34 +1,19 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "index.html",
-      "use": "@vercel/static"
+  "functions": {
+    "api/search.js": {
+      "memory": 1024,
+      "maxDuration": 10
     }
-  ],
+  },
   "routes": [
+    {
+      "src": "/api/search",
+      "dest": "/api/search.js"
+    },
     {
       "src": "/(.*)",
       "dest": "/$1"
-    }
-  ],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        },
-        {
-          "key": "Access-Control-Allow-Methods",
-          "value": "GET, POST, PUT, DELETE, OPTIONS"
-        },
-        {
-          "key": "Access-Control-Allow-Headers",
-          "value": "X-Requested-With, Content-Type, Accept"
-        }
-      ]
     }
   ]
 }

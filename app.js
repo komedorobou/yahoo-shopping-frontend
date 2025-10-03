@@ -189,7 +189,7 @@ async function searchYahooShopping(item) {
         sort: '+price'
     });
 
-    const url = `https://shopping.yahooapis.jp/ShoppingWebService/V3/itemSearch?${params}`;
+    const url = `/api/search?${params}`;
 
     try {
         const response = await fetch(url);
