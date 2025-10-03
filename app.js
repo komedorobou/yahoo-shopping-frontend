@@ -83,6 +83,7 @@ async function startBatchSearch() {
     `;
 
     document.getElementById('stats').style.display = 'grid';
+    document.getElementById('currentSearch').style.display = 'none';
     searchResults = [];
 
     try {
@@ -103,6 +104,12 @@ async function startBatchSearch() {
 
         for (const item of csvData) {
             completed++;
+
+            // 検索中の商品を表示
+            const currentSearchDiv = document.getElementById('currentSearch');
+            const currentSearchText = document.getElementById('currentSearchText');
+            currentSearchDiv.style.display = 'block';
+            currentSearchText.textContent = `${item.brand} ${item.item || ''}`;
 
             // 検索実行
             const results = await searchYahooShopping(item);
@@ -127,6 +134,9 @@ async function startBatchSearch() {
             }
         }
 
+        // 検索完了：表示を非表示
+        document.getElementById('currentSearch').style.display = 'none';
+
         // 完了メッセージ
         if (searchResults.length === 0) {
             resultsDiv.innerHTML = `
@@ -137,6 +147,7 @@ async function startBatchSearch() {
         }
 
     } catch (error) {
+        document.getElementById('currentSearch').style.display = 'none';
         resultsDiv.innerHTML = `
             <div class="message error-message">
                 エラー: ${error.message}
