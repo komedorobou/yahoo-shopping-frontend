@@ -264,6 +264,15 @@ async function searchYahooShopping(item) {
                 continue;
             }
 
+            // 在庫フィルター
+            const includeUnknown = document.getElementById('includeUnknownStock').checked;
+            const stockStatus = hit.inStock !== false ? '在庫あり' : '在庫状況不明';
+
+            // トグルOFFで在庫不明を除外
+            if (!includeUnknown && stockStatus === '在庫状況不明') {
+                continue;
+            }
+
             // 利益計算
             const profitMargin = ((item.originalPrice - hit.price) / item.originalPrice) * 100;
             const profit = item.originalPrice - hit.price;
@@ -281,7 +290,7 @@ async function searchYahooShopping(item) {
                 image: hit.image?.medium || hit.image?.small || '',
                 url: hit.url,
                 shop: hit.seller?.name || 'ストア名不明',
-                stock: hit.inStock !== false ? '在庫あり' : '在庫状況不明'
+                stock: stockStatus
             });
 
             if (results.length >= 5) {
