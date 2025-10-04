@@ -391,6 +391,41 @@ function recalculateStats() {
     }
 }
 
+// ソート機能
+function sortResults() {
+    const sortValue = document.getElementById('sortSelect').value;
+    const container = document.querySelector('.results-container');
+    if (!container) return;
+
+    const cards = Array.from(container.querySelectorAll('.result-card'));
+
+    cards.sort((a, b) => {
+        const getProfit = (card) => parseInt(card.querySelector('.profit-price').textContent.replace(/[^0-9]/g, '')) || 0;
+        const getMargin = (card) => parseInt(card.querySelector('.profit-badge').textContent.replace(/[^0-9]/g, '')) || 0;
+        const getPrice = (card) => parseInt(card.querySelector('.yahoo-price').textContent.replace(/[^0-9]/g, '')) || 0;
+
+        switch (sortValue) {
+            case 'profit-desc':
+                return getProfit(b) - getProfit(a);
+            case 'profit-asc':
+                return getProfit(a) - getProfit(b);
+            case 'margin-desc':
+                return getMargin(b) - getMargin(a);
+            case 'margin-asc':
+                return getMargin(a) - getMargin(b);
+            case 'price-asc':
+                return getPrice(a) - getPrice(b);
+            case 'price-desc':
+                return getPrice(b) - getPrice(a);
+            default:
+                return 0;
+        }
+    });
+
+    // カードを再配置
+    cards.forEach(card => container.appendChild(card));
+}
+
 // 統計更新
 function updateStats(completed, total) {
     document.getElementById('totalSearches').textContent = total;

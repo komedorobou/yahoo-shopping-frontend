@@ -104,7 +104,20 @@
 
         <!-- 結果セクション -->
         <div class="results-section">
-            <h2 class="results-header">High Profit Discoveries</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                <h2 class="results-header" style="margin: 0;">High Profit Discoveries</h2>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <label style="color: rgba(148, 163, 184, 0.9); font-size: 14px; font-weight: 500;">並び替え:</label>
+                    <select id="sortSelect" onchange="sortResults()" style="padding: 10px 20px; background: rgba(0, 255, 163, 0.1); border: 1px solid rgba(0, 255, 163, 0.3); border-radius: 8px; color: white; font-weight: 600; cursor: pointer; outline: none;">
+                        <option value="profit-desc">利益額 (高い順)</option>
+                        <option value="profit-asc">利益額 (安い順)</option>
+                        <option value="margin-desc">利益率 (高い順)</option>
+                        <option value="margin-asc">利益率 (低い順)</option>
+                        <option value="price-asc">Yahoo価格 (安い順)</option>
+                        <option value="price-desc">Yahoo価格 (高い順)</option>
+                    </select>
+                </div>
+            </div>
             <div id="searchResults">
                 <div class="no-results">
                     システム待機中... CSVファイルをアップロードして分析を開始

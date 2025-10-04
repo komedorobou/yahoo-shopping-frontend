@@ -857,6 +857,22 @@
             letter-spacing: 2px;
         }
 
+        /* ソートセレクト */
+        #sortSelect {
+            transition: all 0.3s ease;
+        }
+
+        #sortSelect:hover {
+            background: rgba(0, 255, 163, 0.2);
+            border-color: rgba(0, 255, 163, 0.5);
+            box-shadow: 0 0 20px rgba(0, 255, 163, 0.3);
+        }
+
+        #sortSelect option {
+            background: #111827;
+            color: white;
+        }
+
         /* トグルスイッチ */
         .toggle-switch {
             position: relative;
