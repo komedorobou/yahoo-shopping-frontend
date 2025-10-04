@@ -715,6 +715,46 @@
             font-size: 1.3em;
         }
 
+        /* 見送りボタン */
+        .skip-btn {
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(255, 107, 157, 0.2);
+            border: 1px solid rgba(255, 107, 157, 0.4);
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .skip-btn:hover {
+            background: rgba(255, 107, 157, 0.3);
+            box-shadow: 0 0 20px rgba(255, 107, 157, 0.4);
+        }
+
+        /* 見送り済みカード */
+        .result-card.skipped {
+            opacity: 0.5;
+            filter: grayscale(80%);
+            position: relative;
+        }
+
+        .result-card.skipped::after {
+            content: '見送り済み';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-20deg);
+            font-size: 3em;
+            font-weight: 900;
+            color: rgba(255, 107, 157, 0.6);
+            text-shadow: 0 0 30px rgba(255, 107, 157, 0.8);
+            pointer-events: none;
+            z-index: 10;
+        }
+
         /* スクロールバー */
         ::-webkit-scrollbar {
             width: 12px;

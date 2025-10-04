@@ -335,9 +335,60 @@ function appendResultCard(container, item) {
             <a href="${item.url}" target="_blank" class="buy-link">
                 PURCHASE →
             </a>
+            <button class="skip-btn" onclick="toggleSkip(this)">見送り</button>
         </div>
     `;
     container.appendChild(card);
+}
+
+// 見送りトグル
+function toggleSkip(button) {
+    const card = button.closest('.result-card');
+    const isSkipped = card.classList.toggle('skipped');
+
+    if (isSkipped) {
+        button.textContent = '見送り済み';
+        button.style.background = 'rgba(148, 163, 184, 0.3)';
+    } else {
+        button.textContent = '見送り';
+        button.style.background = '';
+    }
+
+    // 統計を再計算
+    recalculateStats();
+}
+
+// 統計再計算
+function recalculateStats() {
+    const allCards = document.querySelectorAll('.result-card');
+    const activeResults = [];
+
+    allCards.forEach(card => {
+        if (!card.classList.contains('skipped')) {
+            // カードから利益情報を抽出
+            const profitText = card.querySelector('.profit-price').textContent;
+            const profit = parseInt(profitText.replace(/[^0-9]/g, ''));
+            activeResults.push({ profit });
+        }
+    });
+
+    // 統計更新
+    document.getElementById('successfulSearches').textContent = activeResults.length;
+
+    if (activeResults.length > 0) {
+        const avgProfit = Math.floor(
+            activeResults.reduce((sum, item) => sum + (item.profit || 0), 0) / activeResults.length
+        );
+        const totalProfit = Math.floor(
+            activeResults.reduce((sum, item) => sum + (item.profit || 0), 0)
+        );
+
+        document.getElementById('avgProfit').textContent = `¥${avgProfit.toLocaleString()}`;
+        document.getElementById('totalProfit').textContent = `¥${totalProfit.toLocaleString()}`;
+    } else {
+        document.getElementById('avgProfit').textContent = '¥0';
+        document.getElementById('totalProfit').textContent = '¥0';
+    }
 }
 
 // 統計更新
