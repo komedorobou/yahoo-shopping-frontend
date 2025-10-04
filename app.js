@@ -317,12 +317,12 @@ function updateStats(completed, total) {
         const avgProfit = Math.floor(
             searchResults.reduce((sum, item) => sum + (item.profit || 0), 0) / searchResults.length
         );
-        const avgProfitRate = Math.floor(
-            searchResults.reduce((sum, item) => sum + (item.profitMargin || 0), 0) / searchResults.length
+        const totalProfit = Math.floor(
+            searchResults.reduce((sum, item) => sum + (item.profit || 0), 0)
         );
 
         document.getElementById('avgProfit').textContent = `¥${avgProfit.toLocaleString()}`;
-        document.getElementById('avgProfitRate').textContent = `${avgProfitRate}%`;
+        document.getElementById('totalProfit').textContent = `¥${totalProfit.toLocaleString()}`;
     }
 }
 
