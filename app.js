@@ -115,8 +115,10 @@ async function startBatchSearch() {
             // 検索中の商品を表示
             const currentSearchDiv = document.getElementById('currentSearch');
             const currentSearchText = document.getElementById('currentSearchText');
+            const searchProgress = document.getElementById('searchProgress');
             currentSearchDiv.style.display = 'block';
             currentSearchText.textContent = `${item.brand} ${item.item || ''}`;
+            searchProgress.textContent = `${completed}/${csvData.length}`;
 
             // 検索実行
             const results = await searchYahooShopping(item);
