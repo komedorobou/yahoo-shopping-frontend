@@ -86,6 +86,13 @@ async function startBatchSearch() {
     document.getElementById('currentSearch').style.display = 'none';
     searchResults = [];
 
+    // 統計カードに進行中エフェクトを追加
+    const statCards = document.querySelectorAll('.stat-card');
+    statCards.forEach(card => {
+        card.classList.remove('completed');
+        card.classList.add('searching');
+    });
+
     try {
         // CSVを読み込み
         const text = await csvFile.text();
@@ -137,6 +144,13 @@ async function startBatchSearch() {
         // 検索完了：表示を非表示
         document.getElementById('currentSearch').style.display = 'none';
 
+        // 統計カードを完了エフェクトに切り替え
+        const statCards = document.querySelectorAll('.stat-card');
+        statCards.forEach(card => {
+            card.classList.remove('searching');
+            card.classList.add('completed');
+        });
+
         // 完了メッセージ
         if (searchResults.length === 0) {
             resultsDiv.innerHTML = `
@@ -148,6 +162,13 @@ async function startBatchSearch() {
 
     } catch (error) {
         document.getElementById('currentSearch').style.display = 'none';
+
+        // エラー時も完了エフェクトに切り替え
+        const statCards = document.querySelectorAll('.stat-card');
+        statCards.forEach(card => {
+            card.classList.remove('searching');
+            card.classList.add('completed');
+        });
         resultsDiv.innerHTML = `
             <div class="message error-message">
                 エラー: ${error.message}

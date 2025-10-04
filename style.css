@@ -425,7 +425,8 @@
             box-shadow: 0 20px 40px rgba(0, 255, 163, 0.2);
         }
 
-        .stat-card::before {
+        /* 進行中のエフェクト（左から右に流れる） */
+        .stat-card.searching::before {
             content: '';
             position: absolute;
             top: 0;
@@ -436,9 +437,37 @@
             animation: slide 3s ease-in-out infinite;
         }
 
+        /* 完了時のエフェクト（全体が光る） */
+        .stat-card.completed::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #00FFA3, #00B8D9);
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        .stat-card.completed {
+            box-shadow: 0 0 30px rgba(0, 255, 163, 0.4);
+            border-color: rgba(0, 255, 163, 0.6);
+        }
+
         @keyframes slide {
             0% { transform: translateX(-100%); }
             100% { transform: translateX(100%); }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% {
+                opacity: 1;
+                box-shadow: 0 0 20px rgba(0, 255, 163, 0.8);
+            }
+            50% {
+                opacity: 0.6;
+                box-shadow: 0 0 40px rgba(0, 184, 217, 0.8);
+            }
         }
 
         .stat-icon {
