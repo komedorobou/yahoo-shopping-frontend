@@ -104,6 +104,7 @@ async function startBatchSearch() {
 
         // 検索実行
         let completed = 0;
+        let cardIndex = 0; // カードのインデックス
         const resultsContainer = document.createElement('div');
         resultsContainer.className = 'results-container';
         resultsDiv.innerHTML = '';
@@ -126,7 +127,7 @@ async function startBatchSearch() {
             if (results.length > 0) {
                 searchResults.push(...results);
                 results.forEach(result => {
-                    appendResultCard(resultsContainer, result);
+                    appendResultCard(resultsContainer, result, cardIndex++);
                 });
             }
 
@@ -307,9 +308,10 @@ async function searchYahooShopping(item) {
 }
 
 // 結果カード追加
-function appendResultCard(container, item) {
+function appendResultCard(container, item, index) {
     const card = document.createElement('div');
     card.className = 'result-card';
+    card.dataset.index = index; // インデックスを保存
     card.innerHTML = `
         <img src="${item.image || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzUwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzUwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzExMTgyNyIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmaWxsPSIjMDBGRkEzIiBmb250LXNpemU9IjI0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+Tm8gSW1hZ2U8L3RleHQ+PC9zdmc+'}" alt="${item.productName}" class="result-image">
         <div class="result-content">
@@ -399,28 +401,37 @@ function sortResults() {
 
     const cards = Array.from(container.querySelectorAll('.result-card'));
 
-    cards.sort((a, b) => {
-        const getProfit = (card) => parseInt(card.querySelector('.profit-price').textContent.replace(/[^0-9]/g, '')) || 0;
-        const getMargin = (card) => parseInt(card.querySelector('.profit-badge').textContent.replace(/[^0-9]/g, '')) || 0;
-        const getPrice = (card) => parseInt(card.querySelector('.yahoo-price').textContent.replace(/[^0-9]/g, '')) || 0;
+    // 標準順（元の順番）の場合はdata-index属性でソート
+    if (sortValue === 'default') {
+        cards.sort((a, b) => {
+            const indexA = parseInt(a.dataset.index) || 0;
+            const indexB = parseInt(b.dataset.index) || 0;
+            return indexA - indexB;
+        });
+    } else {
+        cards.sort((a, b) => {
+            const getProfit = (card) => parseInt(card.querySelector('.profit-price').textContent.replace(/[^0-9]/g, '')) || 0;
+            const getMargin = (card) => parseInt(card.querySelector('.profit-badge').textContent.replace(/[^0-9]/g, '')) || 0;
+            const getPrice = (card) => parseInt(card.querySelector('.yahoo-price').textContent.replace(/[^0-9]/g, '')) || 0;
 
-        switch (sortValue) {
-            case 'profit-desc':
-                return getProfit(b) - getProfit(a);
-            case 'profit-asc':
-                return getProfit(a) - getProfit(b);
-            case 'margin-desc':
-                return getMargin(b) - getMargin(a);
-            case 'margin-asc':
-                return getMargin(a) - getMargin(b);
-            case 'price-asc':
-                return getPrice(a) - getPrice(b);
-            case 'price-desc':
-                return getPrice(b) - getPrice(a);
-            default:
-                return 0;
-        }
-    });
+            switch (sortValue) {
+                case 'profit-desc':
+                    return getProfit(b) - getProfit(a);
+                case 'profit-asc':
+                    return getProfit(a) - getProfit(b);
+                case 'margin-desc':
+                    return getMargin(b) - getMargin(a);
+                case 'margin-asc':
+                    return getMargin(a) - getMargin(b);
+                case 'price-asc':
+                    return getPrice(a) - getPrice(b);
+                case 'price-desc':
+                    return getPrice(b) - getPrice(a);
+                default:
+                    return 0;
+            }
+        });
+    }
 
     // カードを再配置
     cards.forEach(card => container.appendChild(card));
