@@ -715,6 +715,56 @@
             font-size: 1.3em;
         }
 
+        /* チェックボックスコンテナ */
+        .card-checkbox-container {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            z-index: 5;
+        }
+
+        /* チェックボックス本体（非表示） */
+        .card-checkbox {
+            display: none;
+        }
+
+        /* チェックボックスラベル（表示部分） */
+        .checkbox-label {
+            display: block;
+            width: 30px;
+            height: 30px;
+            border: 2px solid rgba(0, 255, 163, 0.5);
+            border-radius: 50%;
+            background: rgba(17, 24, 39, 0.8);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .checkbox-label:hover {
+            border-color: #00FFA3;
+            box-shadow: 0 0 20px rgba(0, 255, 163, 0.5);
+        }
+
+        /* チェック時のスタイル */
+        .card-checkbox:checked + .checkbox-label {
+            background: linear-gradient(135deg, #00FFA3 0%, #00B8D9 100%);
+            border-color: #00FFA3;
+            box-shadow: 0 0 30px rgba(0, 255, 163, 0.8);
+        }
+
+        /* チェックマーク */
+        .card-checkbox:checked + .checkbox-label::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #000;
+            font-size: 18px;
+            font-weight: 900;
+        }
+
         /* 見送りボタン */
         .skip-btn {
             width: 100%;

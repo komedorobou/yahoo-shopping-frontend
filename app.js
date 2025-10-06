@@ -2,6 +2,7 @@
 let yahooApiKey = null;
 let csvFile = null;
 let searchResults = [];
+let selectedProducts = []; // 選択された商品を保持
 
 // ネオンライン生成
 function createNeonLines() {
@@ -312,7 +313,15 @@ function appendResultCard(container, item, index) {
     const card = document.createElement('div');
     card.className = 'result-card';
     card.dataset.index = index; // インデックスを保存
+
+    // 商品データをカードに保存
+    card.dataset.productData = JSON.stringify(item);
+
     card.innerHTML = `
+        <div class="card-checkbox-container">
+            <input type="checkbox" class="card-checkbox" id="checkbox-${index}" onchange="toggleProductSelect(this, ${index})">
+            <label for="checkbox-${index}" class="checkbox-label"></label>
+        </div>
         <img src="${item.image || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzUwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzUwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzExMTgyNyIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmaWxsPSIjMDBGRkEzIiBmb250LXNpemU9IjI0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+Tm8gSW1hZ2U8L3RleHQ+PC9zdmc+'}" alt="${item.productName}" class="result-image">
         <div class="result-content">
             <div class="result-title">${item.productName}</div>
@@ -453,6 +462,53 @@ function updateStats(completed, total) {
         document.getElementById('avgProfit').textContent = `¥${avgProfit.toLocaleString()}`;
         document.getElementById('totalProfit').textContent = `¥${totalProfit.toLocaleString()}`;
     }
+}
+
+// 商品選択トグル
+function toggleProductSelect(checkbox, index) {
+    const card = checkbox.closest('.result-card');
+    const productData = JSON.parse(card.dataset.productData);
+
+    if (checkbox.checked) {
+        // 選択された商品を配列に追加
+        selectedProducts.push({
+            index: index,
+            data: productData
+        });
+    } else {
+        // 選択解除：配列から削除
+        selectedProducts = selectedProducts.filter(p => p.index !== index);
+    }
+
+    // 選択数カウントを更新
+    updateSelectedCount();
+}
+
+// 選択数カウント更新
+function updateSelectedCount() {
+    const countElement = document.getElementById('selectedCount');
+    const sendBtn = document.getElementById('sendSelectedBtn');
+
+    if (countElement) {
+        countElement.textContent = selectedProducts.length;
+    }
+
+    // 送信ボタンの有効/無効を切り替え
+    if (sendBtn) {
+        if (selectedProducts.length > 0) {
+            sendBtn.style.opacity = '1';
+            sendBtn.style.pointerEvents = 'auto';
+        } else {
+            sendBtn.style.opacity = '0.5';
+            sendBtn.style.pointerEvents = 'none';
+        }
+    }
+}
+
+// 送信モーダルを開く（とりあえずコンソール出力）
+function openSendModal() {
+    console.log('選択された商品:', selectedProducts);
+    alert(`${selectedProducts.length}件の商品が選択されています。\n\n詳細はコンソールを確認してください。`);
 }
 
 // ユーティリティ
