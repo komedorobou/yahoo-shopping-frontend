@@ -24,12 +24,61 @@
         </div>
     </div>
 
+    <!-- 外注先管理モーダル -->
+    <div id="partnersModal" class="api-modal" style="display: none;">
+        <div class="api-modal-content" style="max-width: 900px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                <h2 style="margin: 0;">👥 外注先管理</h2>
+                <button onclick="closePartnersModal()" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer;">✕</button>
+            </div>
+
+            <!-- 追加ボタン -->
+            <button id="addPartnerBtn" onclick="showAddPartnerForm()" style="width: 100%; padding: 15px; background: linear-gradient(135deg, #00FFA3 0%, #00B8D9 100%); border: none; border-radius: 8px; color: #000; font-weight: 700; cursor: pointer; margin-bottom: 20px;">
+                ➕ 新しい外注先を追加
+            </button>
+
+            <!-- 外注先リスト -->
+            <div id="partnersList" style="max-height: 400px; overflow-y: auto;">
+                <!-- ここに外注先リストが表示される -->
+            </div>
+
+            <!-- 追加/編集フォーム（初期非表示） -->
+            <div id="partnerForm" style="display: none; margin-top: 20px; padding: 20px; background: rgba(0, 255, 163, 0.05); border: 1px solid rgba(0, 255, 163, 0.2); border-radius: 10px;">
+                <h3 id="formTitle">新しい外注先を追加</h3>
+                <input type="hidden" id="editPartnerId" value="">
+                <div style="margin-bottom: 15px;">
+                    <label style="color: rgba(148, 163, 184, 0.9); display: block; margin-bottom: 5px;">名前</label>
+                    <input type="text" id="partnerName" placeholder="山田太郎" style="width: 100%; padding: 10px; background: rgba(17, 24, 39, 0.8); border: 1px solid rgba(0, 255, 163, 0.3); border-radius: 5px; color: white;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="color: rgba(148, 163, 184, 0.9); display: block; margin-bottom: 5px;">メールアドレス</label>
+                    <input type="email" id="partnerEmail" placeholder="yamada@example.com" style="width: 100%; padding: 10px; background: rgba(17, 24, 39, 0.8); border: 1px solid rgba(0, 255, 163, 0.3); border-radius: 5px; color: white;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="color: rgba(148, 163, 184, 0.9); display: block; margin-bottom: 5px;">LINE User ID（オプション）</label>
+                    <input type="text" id="partnerLineId" placeholder="Uxxxxxxxxxxxxx" style="width: 100%; padding: 10px; background: rgba(17, 24, 39, 0.8); border: 1px solid rgba(0, 255, 163, 0.3); border-radius: 5px; color: white;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="color: rgba(148, 163, 184, 0.9); display: block; margin-bottom: 5px;">アフィリエイトID</label>
+                    <input type="text" id="partnerAffiliateId" placeholder="vc1234567" style="width: 100%; padding: 10px; background: rgba(17, 24, 39, 0.8); border: 1px solid rgba(0, 255, 163, 0.3); border-radius: 5px; color: white;">
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="savePartner()" style="flex: 1; padding: 10px; background: linear-gradient(135deg, #00FFA3 0%, #00B8D9 100%); border: none; border-radius: 5px; color: #000; font-weight: 700; cursor: pointer;">保存</button>
+                    <button onclick="cancelPartnerForm()" style="flex: 1; padding: 10px; background: rgba(255, 107, 157, 0.2); border: 1px solid rgba(255, 107, 157, 0.4); border-radius: 5px; color: white; font-weight: 600; cursor: pointer;">キャンセル</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
         <header class="header">
             <div class="header-badge">Elite Arbitrage System</div>
             <h1>PROFIT MATRIX</h1>
             <p>次世代AI搭載 メルカリ×Yahoo!ショッピング 自動利益算出システム</p>
-            <button id="settingsBtn" class="settings-btn">⚙️ API設定</button>
+            <div style="display: flex; gap: 15px; justify-content: center; margin-top: 20px;">
+                <button id="settingsBtn" class="settings-btn">⚙️ API設定</button>
+                <button id="partnersBtn" class="settings-btn" onclick="openPartnersModal()">👥 外注先管理</button>
+            </div>
         </header>
 
         <!-- CSVアップロードセクション -->

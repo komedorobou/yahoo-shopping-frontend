@@ -3,6 +3,7 @@ let yahooApiKey = null;
 let csvFile = null;
 let searchResults = [];
 let selectedProducts = []; // 選択された商品を保持
+let partners = []; // 外注先リスト
 
 // ネオンライン生成
 function createNeonLines() {
@@ -26,6 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!yahooApiKey) {
         document.getElementById('apiKeyModal').style.display = 'flex';
     }
+
+    // 外注先リストを読み込み
+    loadPartnersFromStorage();
 });
 
 // APIキー保存
@@ -509,6 +513,200 @@ function updateSelectedCount() {
 function openSendModal() {
     console.log('選択された商品:', selectedProducts);
     alert(`${selectedProducts.length}件の商品が選択されています。\n\n詳細はコンソールを確認してください。`);
+}
+
+// ========================================
+// 外注先管理機能
+// ========================================
+
+// LocalStorageから外注先リストを読み込み
+function loadPartnersFromStorage() {
+    const stored = localStorage.getItem('partners');
+    if (stored) {
+        try {
+            partners = JSON.parse(stored);
+        } catch (e) {
+            console.error('外注先データの読み込みエラー:', e);
+            partners = [];
+        }
+    }
+}
+
+// LocalStorageに外注先リストを保存
+function savePartnersToStorage() {
+    localStorage.setItem('partners', JSON.stringify(partners));
+}
+
+// 外注先管理モーダルを開く
+function openPartnersModal() {
+    document.getElementById('partnersModal').style.display = 'flex';
+    displayPartnersList();
+    cancelPartnerForm(); // フォームを初期状態に戻す
+}
+
+// 外注先管理モーダルを閉じる
+function closePartnersModal() {
+    document.getElementById('partnersModal').style.display = 'none';
+    cancelPartnerForm(); // フォームを閉じる
+}
+
+// 外注先リストを表示
+function displayPartnersList() {
+    const listContainer = document.getElementById('partnersList');
+
+    if (partners.length === 0) {
+        listContainer.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: rgba(148, 163, 184, 0.7);">
+                まだ外注先が登録されていません
+            </div>
+        `;
+        return;
+    }
+
+    listContainer.innerHTML = partners.map((partner, index) => `
+        <div style="padding: 20px; background: rgba(0, 255, 163, 0.05); border: 1px solid rgba(0, 255, 163, 0.2); border-radius: 10px; margin-bottom: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                <div style="flex: 1;">
+                    <div style="font-size: 18px; font-weight: 700; color: #00FFA3; margin-bottom: 8px;">
+                        ${partner.name}
+                    </div>
+                    <div style="color: rgba(148, 163, 184, 0.9); font-size: 14px; margin-bottom: 5px;">
+                        📧 ${partner.email}
+                    </div>
+                    ${partner.lineId ? `
+                        <div style="color: rgba(148, 163, 184, 0.9); font-size: 14px; margin-bottom: 5px;">
+                            💬 ${partner.lineId}
+                        </div>
+                    ` : ''}
+                    <div style="color: rgba(148, 163, 184, 0.9); font-size: 14px;">
+                        🔗 ${partner.affiliateId}
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="editPartner(${index})" style="padding: 8px 15px; background: rgba(0, 184, 217, 0.2); border: 1px solid rgba(0, 184, 217, 0.4); border-radius: 5px; color: #00B8D9; font-weight: 600; cursor: pointer;">
+                        編集
+                    </button>
+                    <button onclick="deletePartner(${index})" style="padding: 8px 15px; background: rgba(255, 107, 157, 0.2); border: 1px solid rgba(255, 107, 157, 0.4); border-radius: 5px; color: #FF6B9D; font-weight: 600; cursor: pointer;">
+                        削除
+                    </button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// 追加フォームを表示
+function showAddPartnerForm() {
+    const form = document.getElementById('partnerForm');
+    const formTitle = document.getElementById('formTitle');
+
+    formTitle.textContent = '新しい外注先を追加';
+    document.getElementById('editPartnerId').value = '';
+    document.getElementById('partnerName').value = '';
+    document.getElementById('partnerEmail').value = '';
+    document.getElementById('partnerLineId').value = '';
+    document.getElementById('partnerAffiliateId').value = '';
+
+    form.style.display = 'block';
+}
+
+// フォームをキャンセル
+function cancelPartnerForm() {
+    const form = document.getElementById('partnerForm');
+    form.style.display = 'none';
+
+    // フォームをクリア
+    document.getElementById('editPartnerId').value = '';
+    document.getElementById('partnerName').value = '';
+    document.getElementById('partnerEmail').value = '';
+    document.getElementById('partnerLineId').value = '';
+    document.getElementById('partnerAffiliateId').value = '';
+}
+
+// 外注先を保存（新規追加または更新）
+function savePartner() {
+    const name = document.getElementById('partnerName').value.trim();
+    const email = document.getElementById('partnerEmail').value.trim();
+    const lineId = document.getElementById('partnerLineId').value.trim();
+    const affiliateId = document.getElementById('partnerAffiliateId').value.trim();
+    const editIndex = document.getElementById('editPartnerId').value;
+
+    // バリデーション
+    if (!name) {
+        alert('名前を入力してください');
+        return;
+    }
+    if (!email) {
+        alert('メールアドレスを入力してください');
+        return;
+    }
+    if (!affiliateId) {
+        alert('アフィリエイトIDを入力してください');
+        return;
+    }
+
+    // メールアドレスの簡易バリデーション
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email)) {
+        alert('正しいメールアドレスを入力してください');
+        return;
+    }
+
+    const partnerData = {
+        id: editIndex ? partners[editIndex].id : Date.now(),
+        name: name,
+        email: email,
+        lineId: lineId,
+        affiliateId: affiliateId,
+        createdAt: editIndex ? partners[editIndex].createdAt : new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+    };
+
+    if (editIndex !== '') {
+        // 更新
+        partners[editIndex] = partnerData;
+    } else {
+        // 新規追加
+        partners.push(partnerData);
+    }
+
+    // LocalStorageに保存
+    savePartnersToStorage();
+
+    // リストを再表示
+    displayPartnersList();
+
+    // フォームを閉じる
+    cancelPartnerForm();
+}
+
+// 外注先を編集
+function editPartner(index) {
+    const partner = partners[index];
+    const form = document.getElementById('partnerForm');
+    const formTitle = document.getElementById('formTitle');
+
+    formTitle.textContent = '外注先を編集';
+    document.getElementById('editPartnerId').value = index;
+    document.getElementById('partnerName').value = partner.name;
+    document.getElementById('partnerEmail').value = partner.email;
+    document.getElementById('partnerLineId').value = partner.lineId || '';
+    document.getElementById('partnerAffiliateId').value = partner.affiliateId;
+
+    form.style.display = 'block';
+}
+
+// 外注先を削除
+function deletePartner(index) {
+    const partner = partners[index];
+
+    if (!confirm(`${partner.name} を削除してもよろしいですか？`)) {
+        return;
+    }
+
+    partners.splice(index, 1);
+    savePartnersToStorage();
+    displayPartnersList();
 }
 
 // ユーティリティ
