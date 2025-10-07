@@ -607,7 +607,7 @@ function selectPartner(index) {
 }
 
 // 送信確認
-function confirmSend() {
+async function confirmSend() {
     if (selectedPartnerId === null) {
         alert('送信先を選択してください');
         return;
@@ -620,10 +620,79 @@ function confirmSend() {
         return;
     }
 
-    // 送信処理（次のステップで実装）
-    alert('送信機能は次のステップで実装します！');
-    console.log('送信先:', partner);
-    console.log('送信商品:', selectedProducts);
+    // 送信ボタンを無効化
+    const sendBtn = document.getElementById('confirmSendBtn');
+    sendBtn.disabled = true;
+    sendBtn.textContent = '送信中...';
+    sendBtn.style.opacity = '0.5';
+
+    try {
+        // 送信方法に応じて処理を分岐
+        if (partner.sendMethod === 'email') {
+            await sendByEmail(partner);
+        } else {
+            await sendByLine(partner);
+        }
+
+        alert(`${partner.name} に送信しました！`);
+
+        // 送信成功後、選択をクリア
+        selectedProducts = [];
+        updateSelectedCount();
+
+        // チェックボックスを全て外す
+        document.querySelectorAll('.card-checkbox').forEach(cb => cb.checked = false);
+
+        // モーダルを閉じる
+        closeSendModal();
+
+    } catch (error) {
+        alert(`送信エラー: ${error.message}`);
+        console.error('送信エラー:', error);
+    } finally {
+        // ボタンを元に戻す
+        sendBtn.disabled = false;
+        sendBtn.textContent = '送信する';
+        sendBtn.style.opacity = '1';
+    }
+}
+
+// メール送信
+async function sendByEmail(partner) {
+    if (!partner.email) {
+        throw new Error('メールアドレスが設定されていません');
+    }
+
+    const products = selectedProducts.map(p => p.data);
+
+    const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            to: partner.email,
+            partnerName: partner.name,
+            products: products
+        })
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'メール送信に失敗しました');
+    }
+
+    return await response.json();
+}
+
+// LINE送信
+async function sendByLine(partner) {
+    if (!partner.lineId) {
+        throw new Error('LINE User IDが設定されていません');
+    }
+
+    // LINE送信は次のステップで実装
+    throw new Error('LINE送信機能は実装中です');
 }
 
 // ========================================
