@@ -698,13 +698,8 @@ function savePartner() {
             alert('正しいメールアドレスを入力してください');
             return;
         }
-    } else {
-        // LINE送信
-        if (!lineId) {
-            alert('LINE User IDを入力してください');
-            return;
-        }
     }
+    // LINE送信の場合、LINE User IDは任意（友だち追加で自動取得）
 
     const partnerData = {
         id: editIndex ? partners[editIndex].id : Date.now(),
