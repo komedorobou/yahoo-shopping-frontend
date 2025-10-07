@@ -509,10 +509,121 @@ function updateSelectedCount() {
     }
 }
 
-// 送信モーダルを開く（とりあえずコンソール出力）
+// ========================================
+// 商品送信機能
+// ========================================
+
+let selectedPartnerId = null; // 選択された送信先
+
+// 送信モーダルを開く
 function openSendModal() {
-    console.log('選択された商品:', selectedProducts);
-    alert(`${selectedProducts.length}件の商品が選択されています。\n\n詳細はコンソールを確認してください。`);
+    if (selectedProducts.length === 0) {
+        alert('商品が選択されていません');
+        return;
+    }
+
+    // 選択商品数を表示
+    document.getElementById('selectedProductCount').textContent = `${selectedProducts.length} 件`;
+
+    // 外注先リストを表示
+    displayPartnerSelectList();
+
+    // モーダルを表示
+    document.getElementById('sendModal').style.display = 'flex';
+}
+
+// 送信モーダルを閉じる
+function closeSendModal() {
+    document.getElementById('sendModal').style.display = 'none';
+    selectedPartnerId = null;
+}
+
+// 送信先選択リストを表示
+function displayPartnerSelectList() {
+    const listContainer = document.getElementById('partnerSelectList');
+
+    if (partners.length === 0) {
+        listContainer.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: rgba(148, 163, 184, 0.7);">
+                外注先が登録されていません<br>
+                <small>「👥 外注先管理」から登録してください</small>
+            </div>
+        `;
+        return;
+    }
+
+    listContainer.innerHTML = partners.map((partner, index) => {
+        const sendMethodBadge = partner.sendMethod === 'email'
+            ? '<span style="display: inline-block; padding: 3px 10px; background: rgba(0, 184, 217, 0.2); border: 1px solid rgba(0, 184, 217, 0.4); border-radius: 12px; font-size: 11px; font-weight: 600; color: #00B8D9;">📧 メール</span>'
+            : '<span style="display: inline-block; padding: 3px 10px; background: rgba(0, 255, 163, 0.2); border: 1px solid rgba(0, 255, 163, 0.4); border-radius: 12px; font-size: 11px; font-weight: 600; color: #00FFA3;">💬 LINE</span>';
+
+        // LINE送信だがUser IDが未設定の場合は送信不可
+        const isDisabled = partner.sendMethod === 'line' && !partner.lineId;
+        const disabledStyle = isDisabled ? 'opacity: 0.5; cursor: not-allowed;' : 'cursor: pointer;';
+        const disabledNote = isDisabled ? '<div style="color: #FF6B9D; font-size: 11px; margin-top: 5px;">※LINE User IDが未設定です</div>' : '';
+
+        return `
+            <div onclick="${isDisabled ? '' : `selectPartner(${index})`}"
+                 id="partner_select_${index}"
+                 style="padding: 15px; margin-bottom: 10px; background: rgba(0, 255, 163, 0.05); border: 2px solid rgba(0, 255, 163, 0.2); border-radius: 8px; transition: all 0.3s; ${disabledStyle}">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="flex: 1;">
+                        <div style="margin-bottom: 5px;">${sendMethodBadge}</div>
+                        <div style="font-size: 16px; font-weight: 700; color: #00FFA3; margin-bottom: 5px;">
+                            ${partner.name}
+                        </div>
+                        ${partner.email ? `<div style="font-size: 12px; color: rgba(148, 163, 184, 0.9);">📧 ${partner.email}</div>` : ''}
+                        ${partner.lineId ? `<div style="font-size: 12px; color: rgba(148, 163, 184, 0.9);">💬 連携済み</div>` : ''}
+                        ${disabledNote}
+                    </div>
+                    <div class="partner-check-icon" style="width: 30px; height: 30px; border: 2px solid rgba(0, 255, 163, 0.5); border-radius: 50%; display: none; align-items: center; justify-content: center;">
+                        <span style="color: #00FFA3; font-size: 18px; font-weight: 900;">✓</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// 送信先を選択
+function selectPartner(index) {
+    // 以前の選択を解除
+    document.querySelectorAll('#partnerSelectList > div').forEach(div => {
+        div.style.borderColor = 'rgba(0, 255, 163, 0.2)';
+        div.style.background = 'rgba(0, 255, 163, 0.05)';
+        const icon = div.querySelector('.partner-check-icon');
+        if (icon) icon.style.display = 'none';
+    });
+
+    // 新しい選択を適用
+    const selectedDiv = document.getElementById(`partner_select_${index}`);
+    selectedDiv.style.borderColor = '#00FFA3';
+    selectedDiv.style.background = 'rgba(0, 255, 163, 0.15)';
+    selectedDiv.style.boxShadow = '0 0 20px rgba(0, 255, 163, 0.3)';
+    const icon = selectedDiv.querySelector('.partner-check-icon');
+    if (icon) icon.style.display = 'flex';
+
+    selectedPartnerId = index;
+}
+
+// 送信確認
+function confirmSend() {
+    if (selectedPartnerId === null) {
+        alert('送信先を選択してください');
+        return;
+    }
+
+    const partner = partners[selectedPartnerId];
+    const productCount = selectedProducts.length;
+
+    if (!confirm(`${partner.name} に ${productCount}件の商品を送信しますか？`)) {
+        return;
+    }
+
+    // 送信処理（次のステップで実装）
+    alert('送信機能は次のステップで実装します！');
+    console.log('送信先:', partner);
+    console.log('送信商品:', selectedProducts);
 }
 
 // ========================================

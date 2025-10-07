@@ -95,6 +95,37 @@
         </div>
     </div>
 
+    <!-- 送信先選択モーダル -->
+    <div id="sendModal" class="api-modal" style="display: none;">
+        <div class="api-modal-content" style="max-width: 600px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                <h2 style="margin: 0;">📤 商品を送信</h2>
+                <button onclick="closeSendModal()" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer;">✕</button>
+            </div>
+
+            <div style="margin-bottom: 20px; padding: 15px; background: rgba(0, 255, 163, 0.1); border: 1px solid rgba(0, 255, 163, 0.3); border-radius: 8px;">
+                <div style="color: rgba(148, 163, 184, 0.9); font-size: 14px; margin-bottom: 5px;">選択中の商品</div>
+                <div id="selectedProductCount" style="font-size: 24px; font-weight: 700; color: #00FFA3;">0 件</div>
+            </div>
+
+            <div style="margin-bottom: 30px;">
+                <label style="color: rgba(148, 163, 184, 0.9); display: block; margin-bottom: 15px; font-weight: 600; font-size: 16px;">送信先を選択</label>
+                <div id="partnerSelectList" style="max-height: 300px; overflow-y: auto;">
+                    <!-- ここに外注先リストが表示される -->
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button id="confirmSendBtn" onclick="confirmSend()" style="flex: 1; padding: 15px; background: linear-gradient(135deg, #00FFA3 0%, #00B8D9 100%); border: none; border-radius: 8px; color: #000; font-weight: 700; cursor: pointer; font-size: 16px;">
+                    送信する
+                </button>
+                <button onclick="closeSendModal()" style="flex: 1; padding: 15px; background: rgba(255, 107, 157, 0.2); border: 1px solid rgba(255, 107, 157, 0.4); border-radius: 8px; color: white; font-weight: 600; cursor: pointer; font-size: 16px;">
+                    キャンセル
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
         <header class="header">
             <div class="header-badge">Elite Arbitrage System</div>
