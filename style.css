@@ -999,3 +999,16 @@
             background: rgba(0, 255, 163, 0.2);
             box-shadow: 0 5px 20px rgba(0, 255, 163, 0.3);
         }
+
+        /* 送信方法選択ラジオボタン */
+        .method-radio:hover {
+            background: rgba(0, 255, 163, 0.2) !important;
+            border-color: rgba(0, 255, 163, 0.5) !important;
+            box-shadow: 0 0 20px rgba(0, 255, 163, 0.3);
+        }
+
+        .method-radio:has(input:checked) {
+            background: linear-gradient(135deg, rgba(0, 255, 163, 0.3) 0%, rgba(0, 184, 217, 0.3) 100%) !important;
+            border-color: #00FFA3 !important;
+            box-shadow: 0 0 30px rgba(0, 255, 163, 0.5);
+        }
