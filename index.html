@@ -46,22 +46,47 @@
             <div id="partnerForm" style="display: none; margin-top: 20px; padding: 20px; background: rgba(0, 255, 163, 0.05); border: 1px solid rgba(0, 255, 163, 0.2); border-radius: 10px;">
                 <h3 id="formTitle">新しい外注先を追加</h3>
                 <input type="hidden" id="editPartnerId" value="">
+
+                <!-- 送信方法選択 -->
+                <div style="margin-bottom: 20px;">
+                    <label style="color: rgba(148, 163, 184, 0.9); display: block; margin-bottom: 10px; font-weight: 600;">送信方法</label>
+                    <div style="display: flex; gap: 15px;">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px 20px; background: rgba(0, 255, 163, 0.1); border: 2px solid rgba(0, 255, 163, 0.3); border-radius: 8px; transition: all 0.3s;">
+                            <input type="radio" name="sendMethod" value="email" id="methodEmail" checked onchange="toggleSendMethodFields()" style="cursor: pointer;">
+                            <span style="color: white; font-weight: 600;">📧 メール</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px 20px; background: rgba(0, 255, 163, 0.1); border: 2px solid rgba(0, 255, 163, 0.3); border-radius: 8px; transition: all 0.3s;">
+                            <input type="radio" name="sendMethod" value="line" id="methodLine" onchange="toggleSendMethodFields()" style="cursor: pointer;">
+                            <span style="color: white; font-weight: 600;">💬 LINE</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 名前（任意） -->
                 <div style="margin-bottom: 15px;">
-                    <label style="color: rgba(148, 163, 184, 0.9); display: block; margin-bottom: 5px;">名前</label>
+                    <label style="color: rgba(148, 163, 184, 0.9); display: block; margin-bottom: 5px;">名前（任意）</label>
                     <input type="text" id="partnerName" placeholder="山田太郎" style="width: 100%; padding: 10px; background: rgba(17, 24, 39, 0.8); border: 1px solid rgba(0, 255, 163, 0.3); border-radius: 5px; color: white;">
                 </div>
-                <div style="margin-bottom: 15px;">
-                    <label style="color: rgba(148, 163, 184, 0.9); display: block; margin-bottom: 5px;">メールアドレス</label>
+
+                <!-- メールアドレス（メール送信時のみ必須） -->
+                <div id="emailField" style="margin-bottom: 15px;">
+                    <label style="color: rgba(148, 163, 184, 0.9); display: block; margin-bottom: 5px;">メールアドレス <span style="color: #FF6B9D;">*</span></label>
                     <input type="email" id="partnerEmail" placeholder="yamada@example.com" style="width: 100%; padding: 10px; background: rgba(17, 24, 39, 0.8); border: 1px solid rgba(0, 255, 163, 0.3); border-radius: 5px; color: white;">
                 </div>
-                <div style="margin-bottom: 15px;">
-                    <label style="color: rgba(148, 163, 184, 0.9); display: block; margin-bottom: 5px;">LINE User ID（オプション）</label>
+
+                <!-- LINE User ID（LINE送信時のみ必須） -->
+                <div id="lineField" style="margin-bottom: 15px; display: none;">
+                    <label style="color: rgba(148, 163, 184, 0.9); display: block; margin-bottom: 5px;">LINE User ID <span style="color: #FF6B9D;">*</span></label>
                     <input type="text" id="partnerLineId" placeholder="Uxxxxxxxxxxxxx" style="width: 100%; padding: 10px; background: rgba(17, 24, 39, 0.8); border: 1px solid rgba(0, 255, 163, 0.3); border-radius: 5px; color: white;">
+                    <small style="color: rgba(148, 163, 184, 0.7); display: block; margin-top: 5px;">※友だち追加で自動取得も可能</small>
                 </div>
+
+                <!-- アフィリエイトID（任意） -->
                 <div style="margin-bottom: 15px;">
-                    <label style="color: rgba(148, 163, 184, 0.9); display: block; margin-bottom: 5px;">アフィリエイトID</label>
+                    <label style="color: rgba(148, 163, 184, 0.9); display: block; margin-bottom: 5px;">アフィリエイトID（任意）</label>
                     <input type="text" id="partnerAffiliateId" placeholder="vc1234567" style="width: 100%; padding: 10px; background: rgba(17, 24, 39, 0.8); border: 1px solid rgba(0, 255, 163, 0.3); border-radius: 5px; color: white;">
                 </div>
+
                 <div style="display: flex; gap: 10px;">
                     <button onclick="savePartner()" style="flex: 1; padding: 10px; background: linear-gradient(135deg, #00FFA3 0%, #00B8D9 100%); border: none; border-radius: 5px; color: #000; font-weight: 700; cursor: pointer;">保存</button>
                     <button onclick="cancelPartnerForm()" style="flex: 1; padding: 10px; background: rgba(255, 107, 157, 0.2); border: 1px solid rgba(255, 107, 157, 0.4); border-radius: 5px; color: white; font-weight: 600; cursor: pointer;">キャンセル</button>

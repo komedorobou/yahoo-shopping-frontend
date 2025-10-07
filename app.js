@@ -563,36 +563,62 @@ function displayPartnersList() {
         return;
     }
 
-    listContainer.innerHTML = partners.map((partner, index) => `
-        <div style="padding: 20px; background: rgba(0, 255, 163, 0.05); border: 1px solid rgba(0, 255, 163, 0.2); border-radius: 10px; margin-bottom: 15px;">
-            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
-                <div style="flex: 1;">
-                    <div style="font-size: 18px; font-weight: 700; color: #00FFA3; margin-bottom: 8px;">
-                        ${partner.name}
-                    </div>
-                    <div style="color: rgba(148, 163, 184, 0.9); font-size: 14px; margin-bottom: 5px;">
-                        📧 ${partner.email}
-                    </div>
-                    ${partner.lineId ? `
-                        <div style="color: rgba(148, 163, 184, 0.9); font-size: 14px; margin-bottom: 5px;">
-                            💬 ${partner.lineId}
+    listContainer.innerHTML = partners.map((partner, index) => {
+        const sendMethodBadge = partner.sendMethod === 'email'
+            ? '<span style="display: inline-block; padding: 4px 12px; background: rgba(0, 184, 217, 0.2); border: 1px solid rgba(0, 184, 217, 0.4); border-radius: 15px; font-size: 12px; font-weight: 600; color: #00B8D9; margin-bottom: 8px;">📧 メール送信</span>'
+            : '<span style="display: inline-block; padding: 4px 12px; background: rgba(0, 255, 163, 0.2); border: 1px solid rgba(0, 255, 163, 0.4); border-radius: 15px; font-size: 12px; font-weight: 600; color: #00FFA3; margin-bottom: 8px;">💬 LINE送信</span>';
+
+        return `
+            <div style="padding: 20px; background: rgba(0, 255, 163, 0.05); border: 1px solid rgba(0, 255, 163, 0.2); border-radius: 10px; margin-bottom: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                    <div style="flex: 1;">
+                        ${sendMethodBadge}
+                        <div style="font-size: 18px; font-weight: 700; color: #00FFA3; margin-bottom: 8px;">
+                            ${partner.name}
                         </div>
-                    ` : ''}
-                    <div style="color: rgba(148, 163, 184, 0.9); font-size: 14px;">
-                        🔗 ${partner.affiliateId}
+                        ${partner.email ? `
+                            <div style="color: rgba(148, 163, 184, 0.9); font-size: 14px; margin-bottom: 5px;">
+                                📧 ${partner.email}
+                            </div>
+                        ` : ''}
+                        ${partner.lineId ? `
+                            <div style="color: rgba(148, 163, 184, 0.9); font-size: 14px; margin-bottom: 5px;">
+                                💬 ${partner.lineId}
+                            </div>
+                        ` : ''}
+                        ${partner.affiliateId ? `
+                            <div style="color: rgba(148, 163, 184, 0.9); font-size: 14px;">
+                                🔗 ${partner.affiliateId}
+                            </div>
+                        ` : ''}
                     </div>
-                </div>
-                <div style="display: flex; gap: 10px;">
-                    <button onclick="editPartner(${index})" style="padding: 8px 15px; background: rgba(0, 184, 217, 0.2); border: 1px solid rgba(0, 184, 217, 0.4); border-radius: 5px; color: #00B8D9; font-weight: 600; cursor: pointer;">
-                        編集
-                    </button>
-                    <button onclick="deletePartner(${index})" style="padding: 8px 15px; background: rgba(255, 107, 157, 0.2); border: 1px solid rgba(255, 107, 157, 0.4); border-radius: 5px; color: #FF6B9D; font-weight: 600; cursor: pointer;">
-                        削除
-                    </button>
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="editPartner(${index})" style="padding: 8px 15px; background: rgba(0, 184, 217, 0.2); border: 1px solid rgba(0, 184, 217, 0.4); border-radius: 5px; color: #00B8D9; font-weight: 600; cursor: pointer;">
+                            編集
+                        </button>
+                        <button onclick="deletePartner(${index})" style="padding: 8px 15px; background: rgba(255, 107, 157, 0.2); border: 1px solid rgba(255, 107, 157, 0.4); border-radius: 5px; color: #FF6B9D; font-weight: 600; cursor: pointer;">
+                            削除
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
+}
+
+// 送信方法による入力フィールド切り替え
+function toggleSendMethodFields() {
+    const emailField = document.getElementById('emailField');
+    const lineField = document.getElementById('lineField');
+    const methodEmail = document.getElementById('methodEmail');
+
+    if (methodEmail.checked) {
+        emailField.style.display = 'block';
+        lineField.style.display = 'none';
+    } else {
+        emailField.style.display = 'none';
+        lineField.style.display = 'block';
+    }
 }
 
 // 追加フォームを表示
@@ -606,6 +632,8 @@ function showAddPartnerForm() {
     document.getElementById('partnerEmail').value = '';
     document.getElementById('partnerLineId').value = '';
     document.getElementById('partnerAffiliateId').value = '';
+    document.getElementById('methodEmail').checked = true;
+    toggleSendMethodFields();
 
     form.style.display = 'block';
 }
@@ -630,34 +658,35 @@ function savePartner() {
     const lineId = document.getElementById('partnerLineId').value.trim();
     const affiliateId = document.getElementById('partnerAffiliateId').value.trim();
     const editIndex = document.getElementById('editPartnerId').value;
+    const sendMethod = document.getElementById('methodEmail').checked ? 'email' : 'line';
 
-    // バリデーション
-    if (!name) {
-        alert('名前を入力してください');
-        return;
-    }
-    if (!email) {
-        alert('メールアドレスを入力してください');
-        return;
-    }
-    if (!affiliateId) {
-        alert('アフィリエイトIDを入力してください');
-        return;
-    }
-
-    // メールアドレスの簡易バリデーション
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(email)) {
-        alert('正しいメールアドレスを入力してください');
-        return;
+    // 送信方法別バリデーション
+    if (sendMethod === 'email') {
+        if (!email) {
+            alert('メールアドレスを入力してください');
+            return;
+        }
+        // メールアドレスの簡易バリデーション
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(email)) {
+            alert('正しいメールアドレスを入力してください');
+            return;
+        }
+    } else {
+        // LINE送信
+        if (!lineId) {
+            alert('LINE User IDを入力してください');
+            return;
+        }
     }
 
     const partnerData = {
         id: editIndex ? partners[editIndex].id : Date.now(),
-        name: name,
-        email: email,
-        lineId: lineId,
-        affiliateId: affiliateId,
+        name: name || '名前未設定',
+        sendMethod: sendMethod,
+        email: email || null,
+        lineId: lineId || null,
+        affiliateId: affiliateId || null,
         createdAt: editIndex ? partners[editIndex].createdAt : new Date().toISOString(),
         updatedAt: new Date().toISOString()
     };
@@ -688,10 +717,18 @@ function editPartner(index) {
 
     formTitle.textContent = '外注先を編集';
     document.getElementById('editPartnerId').value = index;
-    document.getElementById('partnerName').value = partner.name;
-    document.getElementById('partnerEmail').value = partner.email;
+    document.getElementById('partnerName').value = partner.name === '名前未設定' ? '' : partner.name;
+    document.getElementById('partnerEmail').value = partner.email || '';
     document.getElementById('partnerLineId').value = partner.lineId || '';
-    document.getElementById('partnerAffiliateId').value = partner.affiliateId;
+    document.getElementById('partnerAffiliateId').value = partner.affiliateId || '';
+
+    // 送信方法を復元
+    if (partner.sendMethod === 'email') {
+        document.getElementById('methodEmail').checked = true;
+    } else {
+        document.getElementById('methodLine').checked = true;
+    }
+    toggleSendMethodFields();
 
     form.style.display = 'block';
 }
