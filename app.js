@@ -568,6 +568,23 @@ function displayPartnersList() {
             ? '<span style="display: inline-block; padding: 4px 12px; background: rgba(0, 184, 217, 0.2); border: 1px solid rgba(0, 184, 217, 0.4); border-radius: 15px; font-size: 12px; font-weight: 600; color: #00B8D9; margin-bottom: 8px;">📧 メール送信</span>'
             : '<span style="display: inline-block; padding: 4px 12px; background: rgba(0, 255, 163, 0.2); border: 1px solid rgba(0, 255, 163, 0.4); border-radius: 15px; font-size: 12px; font-weight: 600; color: #00FFA3; margin-bottom: 8px;">💬 LINE送信</span>';
 
+        // LINE招待リンク（LINE User IDが未設定の場合のみ表示）
+        const lineInviteSection = partner.sendMethod === 'line' && !partner.lineId ? `
+            <div style="margin-top: 10px; padding: 12px; background: rgba(0, 255, 163, 0.1); border: 1px solid rgba(0, 255, 163, 0.3); border-radius: 8px;">
+                <div style="font-size: 12px; color: rgba(148, 163, 184, 0.9); margin-bottom: 8px;">
+                    👇 この招待リンクを外注先に送ってください
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <input type="text" readonly value="https://line.me/R/ti/p/@398odcen?liff.state=partner_${partner.id}"
+                           id="inviteLink_${partner.id}"
+                           style="flex: 1; padding: 8px; background: rgba(17, 24, 39, 0.9); border: 1px solid rgba(0, 255, 163, 0.5); border-radius: 5px; color: #00FFA3; font-size: 12px; font-family: monospace;">
+                    <button onclick="copyInviteLink(${partner.id})" style="padding: 8px 15px; background: linear-gradient(135deg, #00FFA3 0%, #00B8D9 100%); border: none; border-radius: 5px; color: #000; font-weight: 700; cursor: pointer; white-space: nowrap;">
+                        📋 コピー
+                    </button>
+                </div>
+            </div>
+        ` : '';
+
         return `
             <div style="padding: 20px; background: rgba(0, 255, 163, 0.05); border: 1px solid rgba(0, 255, 163, 0.2); border-radius: 10px; margin-bottom: 15px;">
                 <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
@@ -583,7 +600,7 @@ function displayPartnersList() {
                         ` : ''}
                         ${partner.lineId ? `
                             <div style="color: rgba(148, 163, 184, 0.9); font-size: 14px; margin-bottom: 5px;">
-                                💬 ${partner.lineId}
+                                💬 ${partner.lineId} <span style="color: #00FFA3;">✓ 連携済み</span>
                             </div>
                         ` : ''}
                         ${partner.affiliateId ? `
@@ -591,6 +608,7 @@ function displayPartnersList() {
                                 🔗 ${partner.affiliateId}
                             </div>
                         ` : ''}
+                        ${lineInviteSection}
                     </div>
                     <div style="display: flex; gap: 10px;">
                         <button onclick="editPartner(${index})" style="padding: 8px 15px; background: rgba(0, 184, 217, 0.2); border: 1px solid rgba(0, 184, 217, 0.4); border-radius: 5px; color: #00B8D9; font-weight: 600; cursor: pointer;">
@@ -604,6 +622,14 @@ function displayPartnersList() {
             </div>
         `;
     }).join('');
+}
+
+// 招待リンクをコピー
+function copyInviteLink(partnerId) {
+    const input = document.getElementById(`inviteLink_${partnerId}`);
+    input.select();
+    document.execCommand('copy');
+    alert('招待リンクをコピーしました！\n外注先に送ってください。');
 }
 
 // 送信方法による入力フィールド切り替え
