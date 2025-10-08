@@ -691,8 +691,26 @@ async function sendByLine(partner) {
         throw new Error('LINE User IDが設定されていません');
     }
 
-    // LINE送信は次のステップで実装
-    throw new Error('LINE送信機能は実装中です');
+    const products = selectedProducts.map(p => p.data);
+
+    const response = await fetch('/api/send-line', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            userId: partner.lineId,
+            partnerName: partner.name,
+            products: products
+        })
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'LINE送信に失敗しました');
+    }
+
+    return await response.json();
 }
 
 // ========================================
