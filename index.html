@@ -32,14 +32,34 @@
                 <button onclick="closePartnersModal()" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer;">✕</button>
             </div>
 
-            <!-- 追加ボタン -->
-            <button id="addPartnerBtn" onclick="showAddPartnerForm()" style="width: 100%; padding: 15px; background: linear-gradient(135deg, #00FFA3 0%, #00B8D9 100%); border: none; border-radius: 8px; color: #000; font-weight: 700; cursor: pointer; margin-bottom: 20px;">
-                ➕ 新しい外注先を追加
-            </button>
+            <!-- タブ切り替え -->
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <button id="approvedTab" onclick="switchPartnerTab('approved')" style="flex: 1; padding: 12px; background: linear-gradient(135deg, #00FFA3 0%, #00B8D9 100%); border: none; border-radius: 8px; color: #000; font-weight: 700; cursor: pointer;">
+                    ✓ 承認済み
+                </button>
+                <button id="pendingTab" onclick="switchPartnerTab('pending')" style="flex: 1; padding: 12px; background: rgba(255, 107, 157, 0.2); border: 1px solid rgba(255, 107, 157, 0.4); border-radius: 8px; color: white; font-weight: 600; cursor: pointer;">
+                    ⏳ 承認待ち (<span id="pendingCount">0</span>)
+                </button>
+            </div>
 
-            <!-- 外注先リスト -->
-            <div id="partnersList" style="max-height: 400px; overflow-y: auto;">
-                <!-- ここに外注先リストが表示される -->
+            <!-- 承認済みタブ -->
+            <div id="approvedTabContent">
+                <!-- 追加ボタン -->
+                <button id="addPartnerBtn" onclick="showAddPartnerForm()" style="width: 100%; padding: 15px; background: linear-gradient(135deg, #00FFA3 0%, #00B8D9 100%); border: none; border-radius: 8px; color: #000; font-weight: 700; cursor: pointer; margin-bottom: 20px;">
+                    ➕ 新しい外注先を追加
+                </button>
+
+                <!-- 外注先リスト -->
+                <div id="partnersList" style="max-height: 400px; overflow-y: auto;">
+                    <!-- ここに外注先リストが表示される -->
+                </div>
+            </div>
+
+            <!-- 承認待ちタブ -->
+            <div id="pendingTabContent" style="display: none;">
+                <div id="pendingPartnersList" style="max-height: 400px; overflow-y: auto;">
+                    <!-- ここに承認待ちリストが表示される -->
+                </div>
             </div>
 
             <!-- 追加/編集フォーム（初期非表示） -->

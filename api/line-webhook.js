@@ -1,6 +1,8 @@
 import crypto from 'crypto';
 
 const CHANNEL_SECRET = '7d32000110d4dd72028f39e3c2dd3446';
+const SUPABASE_URL = 'https://czwwlrrgtmiagujdjxdr.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN6d3dscnJndG1pYWd1amRqeGRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwMDM4NDgsImV4cCI6MjA3NTU3OTg0OH0.hKmaKImJP4ApCHoL4lHk8VjzShoQowyLx_e81wkKGis';
 
 export default async function handler(req, res) {
   // CORSヘッダー設定
@@ -44,18 +46,37 @@ export default async function handler(req, res) {
         const userId = event.source.userId;
         const timestamp = event.timestamp;
 
-        // リンクパラメータから外注先IDを取得（今後実装）
-        // event.follow?.params?.state に partner_123 のような値が入る
-
         console.log('友だち追加:', {
           userId,
           timestamp,
           event
         });
 
-        // ここで外注先データベースに自動登録
-        // 現状はLocalStorageベースなので、フロントエンドから別途APIで登録する必要がある
-        // 将来的にはデータベース（Supabase等）に保存
+        // Supabaseの承認待ちリストに保存
+        try {
+          const response = await fetch(`${SUPABASE_URL}/rest/v1/pending_partners`, {
+            method: 'POST',
+            headers: {
+              'apikey': SUPABASE_ANON_KEY,
+              'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+              'Content-Type': 'application/json',
+              'Prefer': 'return=minimal'
+            },
+            body: JSON.stringify({
+              line_id: userId,
+              status: 'pending'
+            })
+          });
+
+          if (response.ok) {
+            console.log('承認待ちリストに追加成功:', userId);
+          } else {
+            const error = await response.text();
+            console.error('Supabase保存エラー:', error);
+          }
+        } catch (error) {
+          console.error('Supabase保存エラー:', error);
+        }
       }
 
       // メッセージ受信イベント

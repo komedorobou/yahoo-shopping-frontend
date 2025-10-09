@@ -4,6 +4,11 @@ let csvFile = null;
 let searchResults = [];
 let selectedProducts = []; // 選択された商品を保持
 let partners = []; // 外注先リスト
+let currentPartnerTab = 'approved'; // 現在表示中のタブ
+
+// Supabase設定
+const SUPABASE_URL = 'https://czwwlrrgtmiagujdjxdr.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN6d3dscnJndG1pYWd1amRqeGRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwMDM4NDgsImV4cCI6MjA3NTU3OTg0OH0.hKmaKImJP4ApCHoL4lHk8VjzShoQowyLx_e81wkKGis';
 
 // ネオンライン生成
 function createNeonLines() {
@@ -739,6 +744,8 @@ function savePartnersToStorage() {
 function openPartnersModal() {
     document.getElementById('partnersModal').style.display = 'flex';
     displayPartnersList();
+    loadPendingPartners(); // 承認待ちリストを読み込み
+    switchPartnerTab('approved'); // デフォルトは承認済みタブ
     cancelPartnerForm(); // フォームを初期状態に戻す
 }
 
@@ -963,6 +970,220 @@ function deletePartner(index) {
     partners.splice(index, 1);
     savePartnersToStorage();
     displayPartnersList();
+}
+
+// ========================================
+// 承認待ちパートナー管理
+// ========================================
+
+// タブ切り替え
+function switchPartnerTab(tabName) {
+    currentPartnerTab = tabName;
+
+    const approvedTab = document.getElementById('approvedTab');
+    const pendingTab = document.getElementById('pendingTab');
+    const approvedContent = document.getElementById('approvedTabContent');
+    const pendingContent = document.getElementById('pendingTabContent');
+
+    if (tabName === 'approved') {
+        // 承認済みタブのスタイル
+        approvedTab.style.background = 'linear-gradient(135deg, #00FFA3 0%, #00B8D9 100%)';
+        approvedTab.style.border = 'none';
+        approvedTab.style.color = '#000';
+
+        // 承認待ちタブのスタイル
+        pendingTab.style.background = 'rgba(255, 107, 157, 0.2)';
+        pendingTab.style.border = '1px solid rgba(255, 107, 157, 0.4)';
+        pendingTab.style.color = 'white';
+
+        // コンテンツ表示切り替え
+        approvedContent.style.display = 'block';
+        pendingContent.style.display = 'none';
+    } else {
+        // 承認待ちタブのスタイル
+        pendingTab.style.background = 'linear-gradient(135deg, #FF6B9D 0%, #C44569 100%)';
+        pendingTab.style.border = 'none';
+        pendingTab.style.color = '#fff';
+
+        // 承認済みタブのスタイル
+        approvedTab.style.background = 'rgba(0, 255, 163, 0.2)';
+        approvedTab.style.border = '1px solid rgba(0, 255, 163, 0.4)';
+        approvedTab.style.color = 'white';
+
+        // コンテンツ表示切り替え
+        approvedContent.style.display = 'none';
+        pendingContent.style.display = 'block';
+    }
+}
+
+// Supabaseから承認待ちリストを取得
+async function loadPendingPartners() {
+    try {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/pending_partners?status=eq.pending&order=created_at.desc`, {
+            method: 'GET',
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('承認待ちリストの取得に失敗しました');
+        }
+
+        const pendingPartners = await response.json();
+
+        // 承認待ち数を更新
+        document.getElementById('pendingCount').textContent = pendingPartners.length;
+
+        // リストを表示
+        displayPendingPartnersList(pendingPartners);
+
+    } catch (error) {
+        console.error('承認待ちリスト取得エラー:', error);
+        document.getElementById('pendingPartnersList').innerHTML = `
+            <div style="text-align: center; padding: 40px; color: rgba(255, 107, 157, 0.7);">
+                ⚠️ データの取得に失敗しました
+            </div>
+        `;
+    }
+}
+
+// 承認待ちリストを表示
+function displayPendingPartnersList(pendingPartners) {
+    const listContainer = document.getElementById('pendingPartnersList');
+
+    if (pendingPartners.length === 0) {
+        listContainer.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: rgba(148, 163, 184, 0.7);">
+                承認待ちの登録はありません
+            </div>
+        `;
+        return;
+    }
+
+    listContainer.innerHTML = pendingPartners.map(pending => {
+        const createdDate = new Date(pending.created_at).toLocaleString('ja-JP');
+
+        return `
+            <div style="padding: 20px; margin-bottom: 15px; background: rgba(30, 41, 59, 0.4); border-radius: 12px; border: 1px solid rgba(148, 163, 184, 0.2);">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                    <div>
+                        <div style="font-weight: 700; font-size: 16px; color: white; margin-bottom: 5px;">
+                            ${pending.display_name || 'LINE User'}
+                        </div>
+                        <div style="color: rgba(148, 163, 184, 0.7); font-size: 12px;">
+                            LINE ID: ${pending.line_id}
+                        </div>
+                        <div style="color: rgba(148, 163, 184, 0.5); font-size: 11px; margin-top: 5px;">
+                            登録日時: ${createdDate}
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="approvePartner(${pending.id}, '${pending.line_id}', '${pending.display_name || 'LINE User'}')"
+                            style="flex: 1; padding: 10px; background: linear-gradient(135deg, #00FFA3 0%, #00B8D9 100%); border: none; border-radius: 8px; color: #000; font-weight: 700; cursor: pointer;">
+                        ✓ 承認
+                    </button>
+                    <button onclick="rejectPartner(${pending.id})"
+                            style="flex: 1; padding: 10px; background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 8px; color: #ef4444; font-weight: 600; cursor: pointer;">
+                        × 却下
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// パートナーを承認（pending_partners → partners）
+async function approvePartner(pendingId, lineId, displayName) {
+    if (!confirm(`${displayName} を外注先として承認しますか？`)) {
+        return;
+    }
+
+    try {
+        // 1. partnersテーブルに追加
+        const partner = {
+            name: displayName,
+            send_method: 'line',
+            line_id: lineId,
+            email: null,
+            affiliate_id: null
+        };
+
+        const addResponse = await fetch(`${SUPABASE_URL}/rest/v1/partners`, {
+            method: 'POST',
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=minimal'
+            },
+            body: JSON.stringify(partner)
+        });
+
+        if (!addResponse.ok) {
+            throw new Error('外注先の追加に失敗しました');
+        }
+
+        // 2. pending_partnersのステータスを更新
+        const updateResponse = await fetch(`${SUPABASE_URL}/rest/v1/pending_partners?id=eq.${pendingId}`, {
+            method: 'PATCH',
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=minimal'
+            },
+            body: JSON.stringify({ status: 'approved' })
+        });
+
+        if (!updateResponse.ok) {
+            throw new Error('承認ステータスの更新に失敗しました');
+        }
+
+        // 3. UI更新
+        alert(`✅ ${displayName} を承認しました`);
+        loadPendingPartners();
+        loadPartnersFromStorage(); // TODO: 将来的にSupabaseから読み込み
+
+    } catch (error) {
+        console.error('承認エラー:', error);
+        alert('❌ 承認に失敗しました: ' + error.message);
+    }
+}
+
+// パートナーを却下
+async function rejectPartner(pendingId) {
+    if (!confirm('この登録を却下しますか？')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/pending_partners?id=eq.${pendingId}`, {
+            method: 'PATCH',
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=minimal'
+            },
+            body: JSON.stringify({ status: 'rejected' })
+        });
+
+        if (!response.ok) {
+            throw new Error('却下処理に失敗しました');
+        }
+
+        alert('✅ 却下しました');
+        loadPendingPartners();
+
+    } catch (error) {
+        console.error('却下エラー:', error);
+        alert('❌ 却下に失敗しました: ' + error.message);
+    }
 }
 
 // ユーティリティ
