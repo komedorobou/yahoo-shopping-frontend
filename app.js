@@ -722,15 +722,46 @@ async function sendByLine(partner) {
 // 外注先管理機能
 // ========================================
 
-// LocalStorageから外注先リストを読み込み
-function loadPartnersFromStorage() {
-    const stored = localStorage.getItem('partners');
-    if (stored) {
-        try {
-            partners = JSON.parse(stored);
-        } catch (e) {
-            console.error('外注先データの読み込みエラー:', e);
-            partners = [];
+// Supabaseから外注先リストを読み込み
+async function loadPartnersFromStorage() {
+    try {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/partners?order=created_at.desc`, {
+            method: 'GET',
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('外注先リストの取得に失敗しました');
+        }
+
+        const supabasePartners = await response.json();
+
+        // Supabaseのデータ形式をアプリの形式に変換
+        partners = supabasePartners.map(p => ({
+            name: p.name,
+            sendMethod: p.send_method,
+            email: p.email,
+            lineId: p.line_id,
+            affiliateId: p.affiliate_id
+        }));
+
+        // 互換性のためLocalStorageにも保存
+        localStorage.setItem('partners', JSON.stringify(partners));
+
+    } catch (error) {
+        console.error('外注先データの読み込みエラー:', error);
+        // エラー時はLocalStorageから読み込み（フォールバック）
+        const stored = localStorage.getItem('partners');
+        if (stored) {
+            try {
+                partners = JSON.parse(stored);
+            } catch (e) {
+                partners = [];
+            }
         }
     }
 }
@@ -741,8 +772,9 @@ function savePartnersToStorage() {
 }
 
 // 外注先管理モーダルを開く
-function openPartnersModal() {
+async function openPartnersModal() {
     document.getElementById('partnersModal').style.display = 'flex';
+    await loadPartnersFromStorage(); // Supabaseから外注先リストを読み込み
     displayPartnersList();
     loadPendingPartners(); // 承認待ちリストを読み込み
     switchPartnerTab('approved'); // デフォルトは承認済みタブ
@@ -1146,8 +1178,9 @@ async function approvePartner(pendingId, lineId, displayName) {
 
         // 3. UI更新
         alert(`✅ ${displayName} を承認しました`);
-        loadPendingPartners();
-        loadPartnersFromStorage(); // TODO: 将来的にSupabaseから読み込み
+        await loadPendingPartners();
+        await loadPartnersFromStorage();
+        displayPartnersList(); // 承認済みリストを再表示
 
     } catch (error) {
         console.error('承認エラー:', error);
