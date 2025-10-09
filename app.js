@@ -742,6 +742,7 @@ async function loadPartnersFromStorage() {
 
         // Supabaseのデータ形式をアプリの形式に変換
         partners = supabasePartners.map(p => ({
+            id: p.id,
             name: p.name,
             sendMethod: p.send_method,
             email: p.email,
@@ -915,7 +916,7 @@ function cancelPartnerForm() {
 }
 
 // 外注先を保存（新規追加または更新）
-function savePartner() {
+async function savePartner() {
     const name = document.getElementById('partnerName').value.trim();
     const email = document.getElementById('partnerEmail').value.trim();
     const lineId = document.getElementById('partnerLineId').value.trim();
@@ -936,35 +937,62 @@ function savePartner() {
             return;
         }
     }
-    // LINE送信の場合、LINE User IDは任意（友だち追加で自動取得）
 
     const partnerData = {
-        id: editIndex ? partners[editIndex].id : Date.now(),
         name: name || '名前未設定',
-        sendMethod: sendMethod,
+        send_method: sendMethod,
         email: email || null,
-        lineId: lineId || null,
-        affiliateId: affiliateId || null,
-        createdAt: editIndex ? partners[editIndex].createdAt : new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        line_id: lineId || null,
+        affiliate_id: affiliateId || null
     };
 
-    if (editIndex !== '') {
-        // 更新
-        partners[editIndex] = partnerData;
-    } else {
-        // 新規追加
-        partners.push(partnerData);
+    try {
+        if (editIndex !== '') {
+            // 更新（Supabase）
+            const partner = partners[editIndex];
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/partners?id=eq.${partner.id}`, {
+                method: 'PATCH',
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=minimal'
+                },
+                body: JSON.stringify(partnerData)
+            });
+
+            if (!response.ok) {
+                throw new Error('更新に失敗しました');
+            }
+            alert('✅ 更新しました');
+        } else {
+            // 新規追加（Supabase）
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/partners`, {
+                method: 'POST',
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=minimal'
+                },
+                body: JSON.stringify(partnerData)
+            });
+
+            if (!response.ok) {
+                throw new Error('追加に失敗しました');
+            }
+            alert('✅ 追加しました');
+        }
+
+        // UIを更新
+        await loadPartnersFromStorage();
+        displayPartnersList();
+        cancelPartnerForm();
+
+    } catch (error) {
+        console.error('保存エラー:', error);
+        alert('❌ 保存に失敗しました: ' + error.message);
     }
-
-    // LocalStorageに保存
-    savePartnersToStorage();
-
-    // リストを再表示
-    displayPartnersList();
-
-    // フォームを閉じる
-    cancelPartnerForm();
 }
 
 // 外注先を編集
@@ -992,16 +1020,35 @@ function editPartner(index) {
 }
 
 // 外注先を削除
-function deletePartner(index) {
+async function deletePartner(index) {
     const partner = partners[index];
 
     if (!confirm(`${partner.name} を削除してもよろしいですか？`)) {
         return;
     }
 
-    partners.splice(index, 1);
-    savePartnersToStorage();
-    displayPartnersList();
+    try {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/partners?id=eq.${partner.id}`, {
+            method: 'DELETE',
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('削除に失敗しました');
+        }
+
+        alert('✅ 削除しました');
+        await loadPartnersFromStorage();
+        displayPartnersList();
+
+    } catch (error) {
+        console.error('削除エラー:', error);
+        alert('❌ 削除に失敗しました: ' + error.message);
+    }
 }
 
 // ========================================
