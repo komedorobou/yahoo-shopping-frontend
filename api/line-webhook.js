@@ -52,6 +52,24 @@ export default async function handler(req, res) {
           event
         });
 
+        // LINEプロフィール情報を取得
+        let displayName = null;
+        try {
+          const profileResponse = await fetch(`https://api.line.me/v2/bot/profile/${userId}`, {
+            headers: {
+              'Authorization': `Bearer ${process.env.LINE_CHANNEL_ACCESS_TOKEN || 'VNn2C/bFcorW2wlXlSbsNB5FNE6FG+BccUMbrza+ULEPO9JKAYOOEnlJML7u63WzC3TSpehJdBAP3EOyVcTOa/lEf6WgaIffDab3U/HbtKZcFSEvdatPJyiLZDYKGK4YJCs7mzSfQ6HFapr1iqBqFwdB04t89/1O/w1cDnyilFU='}`
+            }
+          });
+
+          if (profileResponse.ok) {
+            const profile = await profileResponse.json();
+            displayName = profile.displayName;
+            console.log('プロフィール取得成功:', profile);
+          }
+        } catch (error) {
+          console.error('プロフィール取得エラー:', error);
+        }
+
         // Supabaseの承認待ちリストに保存
         try {
           const response = await fetch(`${SUPABASE_URL}/rest/v1/pending_partners`, {
@@ -64,12 +82,13 @@ export default async function handler(req, res) {
             },
             body: JSON.stringify({
               line_id: userId,
+              display_name: displayName,
               status: 'pending'
             })
           });
 
           if (response.ok) {
-            console.log('承認待ちリストに追加成功:', userId);
+            console.log('承認待ちリストに追加成功:', userId, displayName);
           } else {
             const error = await response.text();
             console.error('Supabase保存エラー:', error);
