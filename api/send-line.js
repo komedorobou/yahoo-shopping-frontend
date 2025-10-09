@@ -1,4 +1,4 @@
-const LINE_CHANNEL_ACCESS_TOKEN = 'IWl2LLWAGXoNNqPH7CtGlrnElIYnuONzzSpPqNoJ+yr9NzbA3K7kXZpw5C4bXM34C3TSpehjdBAP3EOyVcTOa/lEf6WgaIffDab3U/HbtKbaejuXu1nPjw1xAFm68TZv0KHF5Qxs5p/NugUg5ZSoRwdB04t89/O1/w1cDnyilFU=';
+const LINE_CHANNEL_ACCESS_TOKEN = 'VNn2C/bFcorW2wlXlSbsNB5FNE6FG+BccUMbrza+ULEPO9JKAYOOEnlJML7u63WzC3TSpehJdBAP3EOyVcTOa/lEf6WgaIffDab3U/HbtKZcFSEvdatPJyiLZDYKGK4YJCs7mzSfQ6HFapr1iqBqFwdB04t89/1O/w1cDnyilFU=';
 
 export default async function handler(req, res) {
   // CORSヘッダー設定
