@@ -57,6 +57,14 @@ function handleFileSelect(input) {
 // CSVファイルインプットにイベントリスナー追加
 document.getElementById('csvFile').addEventListener('change', function() {
     handleFileSelect(this);
+
+    // ファイル選択後、結果セクションまでスムーズスクロール
+    setTimeout(() => {
+        document.getElementById('searchResults').scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }, 300);
 });
 
 // 検索開始
