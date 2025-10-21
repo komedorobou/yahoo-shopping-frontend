@@ -24,9 +24,6 @@ function createParticles() {
     }
 }
 
-// ページ読み込み時にパーティクルを生成
-window.addEventListener('DOMContentLoaded', createParticles);
-
 // グローバル変数
 let csvFiles = [];
 let mergedData = [];
@@ -37,11 +34,6 @@ let brandsData = null;
 let groupedData = null;
 let isGrouped = false;
 let PRODUCT_NAME_COL = 1; // 商品名の列インデックス（初期値：B列=1、グループ化後：C列=2）
-
-// スライダーの値をリアルタイムで表示
-document.getElementById('similarityThreshold').addEventListener('input', (e) => {
-    document.getElementById('similarityValue').textContent = e.target.value + '%';
-});
 
 // プレビュー数変更時の処理
 function updatePreviewCount() {
@@ -67,42 +59,35 @@ function updatePreviewCount() {
     }
 }
 
-// エンコーディング変更時の処理
-document.getElementById('encoding').addEventListener('change', (e) => {
-    if (originalFiles.length > 0) {
-        reloadFilesWithEncoding(e.target.value);
-    }
-});
-
 function reloadFilesWithEncoding(encoding) {
     csvFiles = [];
-    const encodingToUse = encoding === 'auto' ? 'UTF-8' : 
+    const encodingToUse = encoding === 'auto' ? 'UTF-8' :
                          encoding === 'shift-jis' ? 'Shift-JIS' : 'UTF-8';
-    
+
     let loadedCount = 0;
     originalFiles.forEach(file => {
         const reader = new FileReader();
         reader.onload = (e) => {
             let content = e.target.result;
-            
+
             // UTF-8の場合、BOMを削除
             if (encodingToUse === 'UTF-8' && content.charCodeAt(0) === 0xFEFF) {
                 content = content.slice(1);
             }
-            
+
             csvFiles.push({
                 name: file.name,
                 content: content,
                 size: file.size
             });
-            
+
             loadedCount++;
             if (loadedCount === originalFiles.length) {
                 updateFileList();
                 showSuccess(`${encodingToUse}で再読み込みしました`);
             }
         };
-        
+
         if (encoding === 'auto') {
             // 自動検出モード
             const testReader = new FileReader();
@@ -121,29 +106,63 @@ function reloadFilesWithEncoding(encoding) {
     });
 }
 
-// ドラッグ&ドロップの設定
-const uploadArea = document.getElementById('uploadArea');
-const fileInput = document.getElementById('fileInput');
+// DOM要素の初期化（DOMContentLoaded後に実行）
+window.addEventListener('DOMContentLoaded', () => {
+    // パーティクル生成
+    createParticles();
 
-uploadArea.addEventListener('click', () => fileInput.click());
+    // DOM要素の取得
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const similarityThreshold = document.getElementById('similarityThreshold');
+    const encoding = document.getElementById('encoding');
 
-uploadArea.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    uploadArea.classList.add('dragover');
-});
+    // 必須要素のチェック
+    if (!uploadArea || !fileInput) {
+        console.error('CSV統合モードの必須要素が見つかりません');
+        return;
+    }
 
-uploadArea.addEventListener('dragleave', () => {
-    uploadArea.classList.remove('dragover');
-});
+    // スライダーの値をリアルタイムで表示
+    if (similarityThreshold) {
+        similarityThreshold.addEventListener('input', (e) => {
+            const similarityValue = document.getElementById('similarityValue');
+            if (similarityValue) {
+                similarityValue.textContent = e.target.value + '%';
+            }
+        });
+    }
 
-uploadArea.addEventListener('drop', (e) => {
-    e.preventDefault();
-    uploadArea.classList.remove('dragover');
-    handleFiles(e.dataTransfer.files);
-});
+    // エンコーディング変更時の処理
+    if (encoding) {
+        encoding.addEventListener('change', (e) => {
+            if (originalFiles.length > 0) {
+                reloadFilesWithEncoding(e.target.value);
+            }
+        });
+    }
 
-fileInput.addEventListener('change', (e) => {
-    handleFiles(e.target.files);
+    // ドラッグ&ドロップの設定
+    uploadArea.addEventListener('click', () => fileInput.click());
+
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        handleFiles(e.dataTransfer.files);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+        handleFiles(e.target.files);
+    });
 });
 
 function handleFiles(files) {
