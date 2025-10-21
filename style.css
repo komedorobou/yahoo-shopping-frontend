@@ -29,7 +29,7 @@
                 radial-gradient(circle at 50% 100%, rgba(0, 123, 255, 0.3) 0%, transparent 50%),
                 linear-gradient(180deg, #000000 0%, #0a0e1b 50%, #111827 100%);
             animation: breathe 15s ease-in-out infinite;
-            z-index: -2;
+            z-index: -3;
             transition: opacity 0.5s ease;
             opacity: 1;
         }
@@ -48,17 +48,22 @@
                 radial-gradient(circle at 50% 100%, rgba(138, 43, 226, 0.3) 0%, transparent 50%),
                 linear-gradient(180deg, #000000 0%, #1a0a1b 50%, #271827 100%);
             animation: breathe 15s ease-in-out infinite;
-            z-index: -2;
-            transition: opacity 0.5s ease;
+            z-index: -3;
+            transition: opacity 0.5s ease, visibility 0s 0.5s;
             opacity: 0;
+            visibility: hidden;
         }
 
         body.fusion-mode::before {
             opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease, visibility 0s 0.5s;
         }
 
         body.fusion-mode::after {
             opacity: 1;
+            visibility: visible;
+            transition: opacity 0.5s ease, visibility 0s 0s;
         }
 
         @keyframes breathe {
