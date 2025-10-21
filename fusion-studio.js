@@ -448,12 +448,15 @@ function mergeCSV() {
         console.log('[Fusion Studio] CSVパース開始');
         const parsedFiles = csvFiles.map(file => parseCSV(file.content));
         console.log('[Fusion Studio] CSVパース完了:', parsedFiles.length, 'ファイル');
-        
+        console.log('[Fusion Studio] パースされた行数:', parsedFiles.map(f => f.length));
+
         if (mergeType === 'vertical') {
+            console.log('[Fusion Studio] 縦結合開始');
             mergedData = [];
             window.mergedData = []; // グローバル変数もリセット
-            
+
             parsedFiles.forEach((data, index) => {
+                console.log(`[Fusion Studio] ファイル${index + 1}を結合中: ${data.length}行`);
                 if (index === 0) {
                     mergedData = [...data];
                     window.mergedData = [...data]; // グローバル変数も更新
@@ -463,12 +466,14 @@ function mergeCSV() {
                     window.mergedData.push(...data.slice(startIndex)); // グローバル変数も更新
                 }
             });
+            console.log('[Fusion Studio] 縦結合完了: 合計', mergedData.length, '行');
         } else {
             // 横結合
+            console.log('[Fusion Studio] 横結合開始');
             const maxRows = Math.max(...parsedFiles.map(data => data.length));
             mergedData = [];
             window.mergedData = []; // グローバル変数もリセット
-            
+
             for (let i = 0; i < maxRows; i++) {
                 const row = [];
                 parsedFiles.forEach((data, fileIndex) => {
@@ -483,11 +488,14 @@ function mergeCSV() {
                 mergedData.push(row);
                 window.mergedData.push(row); // グローバル変数も更新
             }
+            console.log('[Fusion Studio] 横結合完了: 合計', mergedData.length, '行');
         }
 
         // 重複削除
         if (removeDuplicates) {
+            console.log('[Fusion Studio] 重複削除開始');
             const uniqueRows = new Set();
+            const beforeCount = mergedData.length;
             mergedData = mergedData.filter(row => {
                 const rowStr = JSON.stringify(row);
                 if (uniqueRows.has(rowStr)) {
@@ -497,13 +505,18 @@ function mergeCSV() {
                 return true;
             });
             window.mergedData = mergedData; // グローバル変数も更新
+            console.log('[Fusion Studio] 重複削除完了:', beforeCount - mergedData.length, '行削除');
         }
 
         // グローバル変数を最終的に更新
         window.mergedData = mergedData;
-        
+
+        console.log('[Fusion Studio] displayPreview呼び出し');
         displayPreview();
+        console.log('[Fusion Studio] displayPreview完了');
+
         showSuccess('CSVファイルを正常に結合しました！');
+        console.log('[Fusion Studio] 成功メッセージ表示');
         
         // 結合結果プレビューまでスムーススクロール
         setTimeout(() => {
@@ -514,8 +527,11 @@ function mergeCSV() {
             }
         }, 100);
     } catch (error) {
+        console.error('[Fusion Studio] エラー発生:', error);
+        console.error('[Fusion Studio] エラースタック:', error.stack);
         showError('結合中にエラーが発生しました: ' + error.message);
     }
+    console.log('[Fusion Studio] mergeCSV関数終了');
 }
 
 // 特定の位置へのスムーススクロール関数
