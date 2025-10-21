@@ -1268,6 +1268,8 @@ document.getElementById('batchSearchBtn').addEventListener('click', startBatchSe
 // ========================================
 
 function switchMode(mode) {
+    console.log('switchMode called with:', mode);
+
     // すべてのタブを非アクティブ化
     document.querySelectorAll('.mode-tab').forEach(tab => {
         tab.classList.remove('active');
@@ -1279,15 +1281,24 @@ function switchMode(mode) {
     });
 
     // 選択されたモードをアクティブ化
-    document.querySelector(`[data-mode="${mode}"]`).classList.add('active');
-    document.getElementById(`${mode}Mode`).classList.add('active');
+    const selectedTab = document.querySelector(`[data-mode="${mode}"]`);
+    const selectedContent = document.getElementById(`${mode}Mode`);
 
-    // 背景色をモードごとに変更
+    if (selectedTab) selectedTab.classList.add('active');
+    if (selectedContent) selectedContent.classList.add('active');
+
+    // 背景色をモードごとに変更（強制的に適用）
     if (mode === 'fusion') {
-        document.body.classList.add('fusion-mode');
+        document.body.classList.remove('fusion-mode'); // 一度削除
+        void document.body.offsetWidth; // リフロー強制
+        document.body.classList.add('fusion-mode'); // 再追加
+        console.log('fusion-mode class added');
     } else {
         document.body.classList.remove('fusion-mode');
+        console.log('fusion-mode class removed');
     }
+
+    console.log('body classes:', document.body.className);
 }
 
 // ========================================
