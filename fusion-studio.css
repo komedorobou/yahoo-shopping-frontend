@@ -996,32 +996,7 @@
             margin-bottom: 30px;
         }
 
-        .stat-card {
-            background: linear-gradient(135deg, #ffffff 0%, #F9FAFB 100%);
-            padding: 25px;
-            border-radius: 16px;
-            text-align: center;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-            border: 1px solid rgba(99, 102, 241, 0.1);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #6366F1 0%, #8B5CF6 50%, #EC4899 100%);
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.15);
-        }
+        /* .stat-card は style.css で管理 */
 
         .stat-value {
             font-size: 2.5em;
