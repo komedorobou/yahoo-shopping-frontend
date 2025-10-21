@@ -62,9 +62,10 @@
         }
 
         .container {
-            max-width: 95%;
-            width: 1800px;
-            margin: 0 auto;
+            max-width: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
             background: transparent;
             overflow: visible;
             min-height: 100vh;
