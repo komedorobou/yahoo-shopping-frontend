@@ -392,6 +392,12 @@
             transition: all 0.3s ease;
         }
 
+        /* Total Scanned カードのみ別色 */
+        .stat-card:first-child {
+            background: rgba(0, 184, 217, 0.08);
+            border: 1px solid rgba(0, 184, 217, 0.3);
+        }
+
         .stat-card:hover {
             transform: translateY(-5px);
             background: rgba(0, 255, 163, 0.05);
