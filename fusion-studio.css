@@ -235,20 +235,7 @@
             }
         }
 
-        .container {
-            max-width: 95%;
-            width: 1800px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 32px;
-            box-shadow: 
-                0 30px 100px rgba(0, 0, 0, 0.5),
-                0 0 100px rgba(102, 126, 234, 0.1),
-                inset 0 0 0 1px rgba(255, 255, 255, 0.1);
-            overflow: hidden;
-            backdrop-filter: blur(20px);
-            min-height: 100vh;
-        }
+        /* .container スタイルは style.css で管理 */
 
         .header {
             background: transparent;
