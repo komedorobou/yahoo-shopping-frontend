@@ -1440,6 +1440,41 @@
             margin-bottom: 10px;
         }
 
+        /* グループ化モーダル用のcheckbox-labelスタイル上書き */
+        .grouping-option .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: auto;
+            height: auto;
+            border: none;
+            border-radius: 0;
+            background: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .grouping-option .checkbox-label:hover {
+            border: none;
+            box-shadow: none;
+            background: none;
+        }
+
+        .grouping-option label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #374151;
+            width: 100%;
+            height: auto;
+            border: none;
+            border-radius: 0;
+            background: none;
+        }
+
         .slider-container {
             display: flex;
             align-items: center;
