@@ -1210,9 +1210,6 @@
             padding: 35px 40px;
             max-height: calc(90vh - 180px);
             overflow-y: auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 20px;
         }
 
         .modal-body::-webkit-scrollbar {
@@ -1231,7 +1228,6 @@
 
         .cleaning-options {
             margin-bottom: 30px;
-            grid-column: 1 / -1;
         }
 
         .cleaning-options h3 {
