@@ -1292,6 +1292,13 @@ function switchMode(mode) {
     // 選択されたモードをアクティブ化
     document.querySelector(`[data-mode="${mode}"]`).classList.add('active');
     document.getElementById(`${mode}Mode`).classList.add('active');
+
+    // 背景色をモードごとに変更
+    if (mode === 'fusion') {
+        document.body.classList.add('fusion-mode');
+    } else {
+        document.body.classList.remove('fusion-mode');
+    }
 }
 
 // ========================================

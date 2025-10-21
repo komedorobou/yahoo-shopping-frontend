@@ -15,7 +15,7 @@
             overflow-x: hidden;
         }
 
-        /* 背景のアニメーショングラデーション */
+        /* 背景のアニメーショングラデーション - デフォルト（緑系） */
         body::before {
             content: '';
             position: fixed;
@@ -30,6 +30,16 @@
                 linear-gradient(180deg, #000000 0%, #0a0e1b 50%, #111827 100%);
             animation: breathe 15s ease-in-out infinite;
             z-index: -2;
+            transition: background 0.5s ease;
+        }
+
+        /* CSV統合モード時の背景（紫系） */
+        body.fusion-mode::before {
+            background:
+                radial-gradient(circle at 20% 50%, rgba(123, 97, 255, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(193, 53, 255, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 50% 100%, rgba(138, 43, 226, 0.3) 0%, transparent 50%),
+                linear-gradient(180deg, #000000 0%, #1a0a1b 50%, #271827 100%);
         }
 
         @keyframes breathe {
