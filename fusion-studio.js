@@ -449,6 +449,13 @@ function mergeCSV() {
         const parsedFiles = csvFiles.map(file => parseCSV(file.content));
         console.log('[Fusion Studio] CSVパース完了:', parsedFiles.length, 'ファイル');
         console.log('[Fusion Studio] パースされた行数:', parsedFiles.map(f => f.length));
+        console.log('[Fusion Studio] パース結果サンプル（1ファイル目の最初の2行）:');
+        if (parsedFiles[0] && parsedFiles[0][0]) {
+            console.log('  行0:', typeof parsedFiles[0][0], Array.isArray(parsedFiles[0][0]), parsedFiles[0][0]);
+        }
+        if (parsedFiles[0] && parsedFiles[0][1]) {
+            console.log('  行1:', typeof parsedFiles[0][1], Array.isArray(parsedFiles[0][1]), parsedFiles[0][1]);
+        }
 
         if (mergeType === 'vertical') {
             console.log('[Fusion Studio] 縦結合開始');
@@ -467,6 +474,13 @@ function mergeCSV() {
                 }
             });
             console.log('[Fusion Studio] 縦結合完了: 合計', mergedData.length, '行');
+            console.log('[Fusion Studio] 結合後サンプル（最初の2行）:');
+            if (mergedData[0]) {
+                console.log('  行0:', typeof mergedData[0], Array.isArray(mergedData[0]), mergedData[0]);
+            }
+            if (mergedData[1]) {
+                console.log('  行1:', typeof mergedData[1], Array.isArray(mergedData[1]), mergedData[1]);
+            }
         } else {
             // 横結合
             console.log('[Fusion Studio] 横結合開始');
