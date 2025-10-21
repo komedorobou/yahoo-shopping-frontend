@@ -89,6 +89,14 @@ async function startBatchSearch() {
         </div>
     `;
 
+    // 結果セクションまでスクロール
+    setTimeout(() => {
+        resultsDiv.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }, 100);
+
     document.getElementById('stats').style.display = 'grid';
     document.getElementById('currentSearch').style.display = 'none';
     searchResults = [];
