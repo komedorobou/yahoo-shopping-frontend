@@ -451,10 +451,13 @@ function mergeCSV() {
         console.log('[Fusion Studio] パースされた行数:', parsedFiles.map(f => f.length));
         console.log('[Fusion Studio] パース結果サンプル（1ファイル目の最初の2行）:');
         if (parsedFiles[0] && parsedFiles[0][0]) {
-            console.log('  行0:', typeof parsedFiles[0][0], Array.isArray(parsedFiles[0][0]), parsedFiles[0][0]);
+            console.log('  行0:', typeof parsedFiles[0][0], Array.isArray(parsedFiles[0][0]));
+            console.log('  行0 JSON:', JSON.stringify(parsedFiles[0][0]).substring(0, 200));
+            console.log('  行0 length:', parsedFiles[0][0].length);
         }
         if (parsedFiles[0] && parsedFiles[0][1]) {
-            console.log('  行1:', typeof parsedFiles[0][1], Array.isArray(parsedFiles[0][1]), parsedFiles[0][1]);
+            console.log('  行1:', typeof parsedFiles[0][1], Array.isArray(parsedFiles[0][1]));
+            console.log('  行1 JSON:', JSON.stringify(parsedFiles[0][1]).substring(0, 200));
         }
 
         if (mergeType === 'vertical') {
