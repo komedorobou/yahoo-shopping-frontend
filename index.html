@@ -304,40 +304,40 @@
 
             <div class="file-list" id="fileList"></div>
 
-            <div class="options" id="optionsSection" style="display: none;">
-                <h3>結合オプション</h3>
+            <div class="fusion-options" id="optionsSection" style="display: none;">
+                <h3 style="font-size: 1.5em; font-weight: 700; color: #1F2937; margin-bottom: 30px; text-align: center;">結合オプション</h3>
 
-                <div class="option-group">
-                    <label for="encoding">文字エンコーディング:</label>
-                    <select id="encoding">
+                <div class="fusion-option-group">
+                    <label for="encoding" style="font-weight: 600; color: #374151; display: block; margin-bottom: 10px;">文字エンコーディング:</label>
+                    <select id="encoding" style="padding: 12px 16px; border: 2px solid #E5E7EB; border-radius: 10px; font-size: 15px; background: white; width: 100%; max-width: 500px;">
                         <option value="auto">自動検出</option>
                         <option value="utf-8">UTF-8</option>
                         <option value="shift-jis">Shift-JIS（Windows日本語）</option>
                     </select>
-                    <small style="color: #666; display: block; margin-top: 5px;">
+                    <small style="color: #666; display: block; margin-top: 8px;">
                         ※文字化けする場合は「Shift-JIS」を選択してください
                     </small>
                 </div>
 
-                <div class="option-group">
-                    <label for="mergeType">結合方法:</label>
-                    <select id="mergeType">
+                <div class="fusion-option-group" style="margin-bottom: 25px;">
+                    <label for="mergeType" style="font-weight: 600; color: #374151; display: block; margin-bottom: 10px;">結合方法:</label>
+                    <select id="mergeType" style="padding: 12px 16px; border: 2px solid #E5E7EB; border-radius: 10px; font-size: 15px; background: white; width: 100%; max-width: 500px;">
                         <option value="vertical">縦結合（行を追加）</option>
                         <option value="horizontal">横結合（列を追加）</option>
                     </select>
                 </div>
 
-                <div class="option-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="includeHeaders" checked>
-                        <span>ヘッダー行を含める（最初のファイルのみ）</span>
+                <div class="fusion-option-group" style="margin-bottom: 25px;">
+                    <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                        <input type="checkbox" id="includeHeaders" checked style="width: 20px; height: 20px; cursor: pointer;">
+                        <span style="font-weight: 600; color: #374151;">ヘッダー行を含める（最初のファイルのみ）</span>
                     </label>
                 </div>
 
-                <div class="option-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="removeDuplicates">
-                        <span>重複行を削除</span>
+                <div class="fusion-option-group" style="margin-bottom: 25px;">
+                    <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                        <input type="checkbox" id="removeDuplicates" style="width: 20px; height: 20px; cursor: pointer;">
+                        <span style="font-weight: 600; color: #374151;">重複行を削除</span>
                     </label>
                 </div>
             </div>

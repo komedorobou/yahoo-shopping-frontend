@@ -723,7 +723,7 @@
             box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
         }
 
-        .options {
+        #fusionMode .fusion-options {
             margin: 40px 0;
             padding: 35px;
             background: linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%);
@@ -734,65 +734,8 @@
             margin-right: auto;
         }
 
-        .options h3 {
-            font-size: 1.5em;
-            font-weight: 700;
-            color: #1F2937;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        #fusionMode .option-group {
+        #fusionMode .fusion-option-group {
             margin-bottom: 25px;
-            display: block;
-        }
-
-        #fusionMode .option-group label {
-            font-weight: 600;
-            color: #374151;
-            display: block;
-            margin-bottom: 10px;
-        }
-
-        #fusionMode .option-group select {
-            padding: 12px 16px;
-            border: 2px solid #E5E7EB;
-            border-radius: 10px;
-            font-size: 15px;
-            transition: all 0.3s ease;
-            background: white;
-            width: 100%;
-            max-width: 500px;
-        }
-
-        #fusionMode .option-group select:focus {
-            border-color: #6366F1;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
-
-        #fusionMode .option-group small {
-            display: block;
-            margin-top: 8px;
-            color: #666;
-        }
-
-        #fusionMode .checkbox-label {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        #fusionMode .checkbox-label:hover {
-            transform: translateX(5px);
-        }
-
-        #fusionMode .checkbox-label input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
         }
 
         .action-buttons {
