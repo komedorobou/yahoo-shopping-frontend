@@ -10,20 +10,6 @@ let currentPartnerTab = 'approved'; // 現在表示中のタブ
 const SUPABASE_URL = 'https://czwwlrrgtmiagujdjxdr.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN6d3dscnJndG1pYWd1amRqeGRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwMDM4NDgsImV4cCI6MjA3NTU3OTg0OH0.hKmaKImJP4ApCHoL4lHk8VjzShoQowyLx_e81wkKGis';
 
-// ネオンライン生成
-function createNeonLines() {
-    const container = document.getElementById('neonLines');
-    for (let i = 0; i < 5; i++) {
-        const line = document.createElement('div');
-        line.className = 'neon-line';
-        line.style.left = Math.random() * 100 + '%';
-        line.style.animationDelay = Math.random() * 10 + 's';
-        line.style.opacity = Math.random() * 0.5 + 0.1;
-        container.appendChild(line);
-    }
-}
-createNeonLines();
-
 // 初期化
 document.addEventListener('DOMContentLoaded', () => {
     // LocalStorageからAPIキーを取得

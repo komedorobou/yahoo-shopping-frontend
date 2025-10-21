@@ -61,31 +61,6 @@
             50% { transform: scale(1.05) rotate(1deg); }
         }
 
-        /* ネオンライン */
-        .neon-lines {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: -1;
-        }
-
-        .neon-line {
-            position: absolute;
-            width: 2px;
-            height: 100%;
-            background: linear-gradient(180deg, transparent, #00FFA3, transparent);
-            animation: neon-move 10s linear infinite;
-        }
-
-        @keyframes neon-move {
-            from { transform: translateX(-100vw); }
-            to { transform: translateX(100vw); }
-        }
-
-
         .container {
             max-width: 95%;
             width: 1800px;
