@@ -512,6 +512,10 @@ function mergeCSV() {
         window.mergedData = mergedData;
 
         console.log('[Fusion Studio] displayPreview呼び出し');
+        console.log('[Fusion Studio] mergedData サンプル（最初の3行）:');
+        mergedData.slice(0, 3).forEach((row, i) => {
+            console.log(`  行${i}:`, typeof row, Array.isArray(row), row);
+        });
         displayPreview();
         console.log('[Fusion Studio] displayPreview完了');
 
