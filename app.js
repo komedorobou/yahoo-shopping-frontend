@@ -35,6 +35,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 外注先リストを読み込み
     loadPartnersFromStorage();
+
+    // 初期状態は検索モード（緑背景）
+    document.body.classList.remove('fusion-mode');
 });
 
 // APIキー保存
