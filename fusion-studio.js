@@ -397,16 +397,16 @@ function clearAll() {
     hideMessages();
 }
 
-function parseCSV(content) {
+function parseFusionCSV(content) {
     const lines = content.trim().split('\n');
     return lines.map(line => {
         const result = [];
         let current = '';
         let inQuotes = false;
-        
+
         for (let i = 0; i < line.length; i++) {
             const char = line[i];
-            
+
             if (char === '"') {
                 inQuotes = !inQuotes;
             } else if (char === ',' && !inQuotes) {
@@ -416,7 +416,7 @@ function parseCSV(content) {
                 current += char;
             }
         }
-        
+
         result.push(current.trim());
         return result;
     });
@@ -446,7 +446,7 @@ function mergeCSV() {
 
     try {
         console.log('[Fusion Studio] CSVパース開始');
-        const parsedFiles = csvFiles.map(file => parseCSV(file.content));
+        const parsedFiles = csvFiles.map(file => parseFusionCSV(file.content));
         console.log('[Fusion Studio] CSVパース完了:', parsedFiles.length, 'ファイル');
         console.log('[Fusion Studio] パースされた行数:', parsedFiles.map(f => f.length));
         console.log('[Fusion Studio] パース結果サンプル（1ファイル目の最初の2行）:');
