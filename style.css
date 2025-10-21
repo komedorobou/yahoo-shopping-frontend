@@ -392,28 +392,10 @@
             transition: all 0.3s ease;
         }
 
-        /* Total Scanned カード - 水色 */
-        .stat-card:nth-child(1) {
+        /* 全カードを水色に統一 */
+        .stat-card {
             background: rgba(0, 184, 217, 0.08);
             border: 1px solid rgba(0, 184, 217, 0.3);
-        }
-
-        /* Profit Items カード - 緑 */
-        .stat-card:nth-child(2) {
-            background: rgba(0, 255, 163, 0.08);
-            border: 1px solid rgba(0, 255, 163, 0.3);
-        }
-
-        /* Avg Profit カード - 紫 */
-        .stat-card:nth-child(3) {
-            background: rgba(123, 97, 255, 0.08);
-            border: 1px solid rgba(123, 97, 255, 0.3);
-        }
-
-        /* Total Profit カード - オレンジ */
-        .stat-card:nth-child(4) {
-            background: rgba(255, 159, 64, 0.08);
-            border: 1px solid rgba(255, 159, 64, 0.3);
         }
 
         .stat-card:hover {
@@ -442,13 +424,14 @@
             left: 0;
             right: 0;
             height: 3px;
-            background: linear-gradient(90deg, #00FFA3, #00B8D9);
+            background: linear-gradient(90deg, #00B8D9, #00FFA3, #00B8D9);
             animation: pulse-glow 2s ease-in-out infinite;
         }
 
         .stat-card.completed {
-            box-shadow: 0 0 30px rgba(0, 255, 163, 0.4);
-            border-color: rgba(0, 255, 163, 0.6);
+            background: rgba(0, 184, 217, 0.15);
+            box-shadow: 0 0 50px rgba(0, 184, 217, 0.8), 0 0 100px rgba(0, 184, 217, 0.5);
+            border-color: rgba(0, 184, 217, 0.8);
         }
 
         @keyframes slide {
@@ -459,11 +442,11 @@
         @keyframes pulse-glow {
             0%, 100% {
                 opacity: 1;
-                box-shadow: 0 0 20px rgba(0, 255, 163, 0.8);
+                box-shadow: 0 0 40px rgba(0, 184, 217, 1), 0 0 80px rgba(0, 184, 217, 0.6);
             }
             50% {
-                opacity: 0.6;
-                box-shadow: 0 0 40px rgba(0, 184, 217, 0.8);
+                opacity: 0.8;
+                box-shadow: 0 0 60px rgba(0, 184, 217, 1), 0 0 120px rgba(0, 184, 217, 0.8);
             }
         }
 
