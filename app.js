@@ -1301,19 +1301,13 @@ function switchMode(mode) {
 let fusionFile = null;
 let fusionResults = [];
 
-// ファイル選択イベント
-document.getElementById('fusionFile').addEventListener('change', function() {
-    fusionFile = this.files[0];
-    if (fusionFile) {
-        document.getElementById('fusionFileName').textContent = `✅ ${fusionFile.name}`;
-        document.getElementById('fusionProcessBtn').disabled = false;
-    }
-});
+// ファイル選択イベント - 削除（fusion-studio.jsで処理）
+// fileInputはfusion-studio.jsで処理されます
 
-// 処理開始ボタン
-document.getElementById('fusionProcessBtn').addEventListener('click', processFusionData);
+// 処理開始ボタン - 削除（fusion-studio.jsで処理）
+// 以下の関数は使用されていないため削除予定
 
-async function processFusionData() {
+async function processFusionData_OLD() {
     if (!fusionFile) {
         alert('ファイルを選択してください');
         return;

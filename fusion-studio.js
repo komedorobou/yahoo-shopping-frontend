@@ -1,12 +1,17 @@
         // パーティクル生成
         function createParticles() {
             const container = document.getElementById('particles');
+            if (!container) {
+                // particles要素がない場合は何もしない
+                return;
+            }
+
             const particleCount = 50;
-            
+
             for (let i = 0; i < particleCount; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'particle';
-                
+
                 // ランダムなサイズと位置
                 const size = Math.random() * 4 + 2;
                 particle.style.width = size + 'px';
@@ -14,7 +19,7 @@
                 particle.style.left = Math.random() * 100 + '%';
                 particle.style.animationDuration = (Math.random() * 20 + 10) + 's';
                 particle.style.animationDelay = Math.random() * 20 + 's';
-                
+
                 container.appendChild(particle);
             }
         }
