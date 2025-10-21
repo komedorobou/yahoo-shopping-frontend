@@ -1,8 +1,4 @@
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        /* グローバルリセットを削除 - style.cssと競合するため */
 
         /* ストックリスト用スタイル */
         .stock-panel {
@@ -746,47 +742,57 @@
             text-align: center;
         }
 
-        .option-group {
+        #fusionMode .option-group {
             margin-bottom: 25px;
-            display: grid;
-            grid-template-columns: 200px 1fr;
-            align-items: center;
-            gap: 20px;
+            display: block;
         }
 
-        .option-group label {
+        #fusionMode .option-group label {
             font-weight: 600;
             color: #374151;
-            text-align: right;
+            display: block;
+            margin-bottom: 10px;
         }
 
-        .option-group select {
+        #fusionMode .option-group select {
             padding: 12px 16px;
             border: 2px solid #E5E7EB;
             border-radius: 10px;
             font-size: 15px;
             transition: all 0.3s ease;
             background: white;
-            max-width: 400px;
+            width: 100%;
+            max-width: 500px;
         }
 
-        .option-group select:focus {
+        #fusionMode .option-group select:focus {
             border-color: #6366F1;
             outline: none;
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
         }
 
-        .checkbox-label {
+        #fusionMode .option-group small {
+            display: block;
+            margin-top: 8px;
+            color: #666;
+        }
+
+        #fusionMode .checkbox-label {
             display: flex;
             align-items: center;
             gap: 12px;
             cursor: pointer;
             transition: all 0.2s ease;
-            grid-column: 2;
         }
 
-        .checkbox-label:hover {
+        #fusionMode .checkbox-label:hover {
             transform: translateX(5px);
+        }
+
+        #fusionMode .checkbox-label input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
         }
 
         .action-buttons {
