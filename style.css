@@ -30,16 +30,35 @@
                 linear-gradient(180deg, #000000 0%, #0a0e1b 50%, #111827 100%);
             animation: breathe 15s ease-in-out infinite;
             z-index: -2;
-            transition: background 0.5s ease;
+            transition: opacity 0.5s ease;
+            opacity: 1;
         }
 
         /* CSV統合モード時の背景（紫系） */
-        body.fusion-mode::before {
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             background:
                 radial-gradient(circle at 20% 50%, rgba(123, 97, 255, 0.3) 0%, transparent 50%),
                 radial-gradient(circle at 80% 50%, rgba(193, 53, 255, 0.3) 0%, transparent 50%),
                 radial-gradient(circle at 50% 100%, rgba(138, 43, 226, 0.3) 0%, transparent 50%),
                 linear-gradient(180deg, #000000 0%, #1a0a1b 50%, #271827 100%);
+            animation: breathe 15s ease-in-out infinite;
+            z-index: -2;
+            transition: opacity 0.5s ease;
+            opacity: 0;
+        }
+
+        body.fusion-mode::before {
+            opacity: 0;
+        }
+
+        body.fusion-mode::after {
+            opacity: 1;
         }
 
         @keyframes breathe {
@@ -71,26 +90,6 @@
             to { transform: translateX(100vw); }
         }
 
-        /* グリッドパターン */
-        body::after {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image:
-                linear-gradient(rgba(0, 255, 163, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 255, 163, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
-            z-index: -1;
-            animation: grid-move 20s linear infinite;
-        }
-
-        @keyframes grid-move {
-            from { transform: translate(0, 0); }
-            to { transform: translate(50px, 50px); }
-        }
 
         .container {
             max-width: 95%;
