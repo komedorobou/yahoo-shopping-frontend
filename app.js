@@ -1273,3 +1273,359 @@ function sleep(ms) {
 
 // ボタンのクリックイベント
 document.getElementById('batchSearchBtn').addEventListener('click', startBatchSearch);
+
+// ========================================
+// モード切替機能
+// ========================================
+
+function switchMode(mode) {
+    // すべてのタブを非アクティブ化
+    document.querySelectorAll('.mode-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+
+    // すべてのコンテンツを非表示
+    document.querySelectorAll('.mode-content').forEach(content => {
+        content.classList.remove('active');
+    });
+
+    // 選択されたモードをアクティブ化
+    document.querySelector(`[data-mode="${mode}"]`).classList.add('active');
+    document.getElementById(`${mode}Mode`).classList.add('active');
+}
+
+// ========================================
+// CSV統合モード機能
+// ========================================
+
+let fusionFile = null;
+let fusionResults = [];
+
+// ファイル選択イベント
+document.getElementById('fusionFile').addEventListener('change', function() {
+    fusionFile = this.files[0];
+    if (fusionFile) {
+        document.getElementById('fusionFileName').textContent = `✅ ${fusionFile.name}`;
+        document.getElementById('fusionProcessBtn').disabled = false;
+    }
+});
+
+// 処理開始ボタン
+document.getElementById('fusionProcessBtn').addEventListener('click', processFusionData);
+
+async function processFusionData() {
+    if (!fusionFile) {
+        alert('ファイルを選択してください');
+        return;
+    }
+
+    try {
+        // ファイル読み込み
+        const fileExtension = fusionFile.name.split('.').pop().toLowerCase();
+        let rawData = [];
+
+        if (fileExtension === 'csv') {
+            const text = await fusionFile.text();
+            rawData = parseCSVData(text);
+        } else if (fileExtension === 'xlsx' || fileExtension === 'xls') {
+            rawData = await parseExcelData(fusionFile);
+        }
+
+        if (rawData.length === 0) {
+            alert('データが空です');
+            return;
+        }
+
+        // ブランド正規化とグループ化
+        fusionResults = processAndGroupData(rawData);
+
+        // 結果を表示
+        displayFusionResults(fusionResults);
+
+        // 統計表示
+        document.getElementById('fusionResults').style.display = 'block';
+
+    } catch (error) {
+        console.error('処理エラー:', error);
+        alert('データの処理に失敗しました: ' + error.message);
+    }
+}
+
+// CSVパース
+function parseCSVData(text) {
+    const lines = text.split('\n').filter(line => line.trim());
+    const data = [];
+
+    // ヘッダー行をスキップ
+    for (let i = 1; i < lines.length; i++) {
+        const columns = lines[i].split(',');
+        if (columns.length < 3) continue;
+
+        const productName = columns[0]?.trim();
+        const priceStr = columns[1]?.trim();
+
+        if (!productName || !priceStr) continue;
+
+        const price = parseInt(priceStr.replace(/[^0-9]/g, ''));
+        if (isNaN(price) || price <= 0) continue;
+
+        data.push({
+            productName,
+            price
+        });
+    }
+
+    return data;
+}
+
+// Excelパース
+async function parseExcelData(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+
+                const parsedData = [];
+                for (let i = 1; i < jsonData.length; i++) {
+                    const row = jsonData[i];
+                    if (!row[0] || !row[1]) continue;
+
+                    const productName = String(row[0]).trim();
+                    const price = parseInt(String(row[1]).replace(/[^0-9]/g, ''));
+
+                    if (productName && !isNaN(price) && price > 0) {
+                        parsedData.push({ productName, price });
+                    }
+                }
+
+                resolve(parsedData);
+            } catch (error) {
+                reject(error);
+            }
+        };
+        reader.onerror = reject;
+        reader.readAsArrayBuffer(file);
+    });
+}
+
+// データ処理とグループ化
+function processAndGroupData(rawData) {
+    const grouped = {};
+
+    rawData.forEach(item => {
+        // ブランド検出（brands.jsのBRAND_DICTIONARYを使用）
+        let detectedBrand = 'その他';
+        
+        if (typeof BRAND_DICTIONARY !== 'undefined') {
+            for (const [brand, keywords] of Object.entries(BRAND_DICTIONARY)) {
+                if (keywords.some(keyword => item.productName.includes(keyword))) {
+                    detectedBrand = brand;
+                    break;
+                }
+            }
+        }
+
+        // グループ名を正規化（色・サイズを除去）
+        const normalizedName = normalizeProductName(item.productName);
+
+        const key = `${detectedBrand}_${normalizedName}`;
+
+        if (!grouped[key]) {
+            grouped[key] = {
+                brand: detectedBrand,
+                groupName: normalizedName,
+                prices: [],
+                count: 0
+            };
+        }
+
+        grouped[key].prices.push(item.price);
+        grouped[key].count++;
+    });
+
+    // 統計計算
+    const results = Object.values(grouped).map(group => {
+        const sortedPrices = group.prices.sort((a, b) => a - b);
+        const median = sortedPrices[Math.floor(sortedPrices.length / 2)];
+        const avg = Math.floor(sortedPrices.reduce((a, b) => a + b, 0) / sortedPrices.length);
+        const min = sortedPrices[0];
+        const max = sortedPrices[sortedPrices.length - 1];
+
+        return {
+            brand: group.brand,
+            groupName: group.groupName,
+            count: group.count,
+            median,
+            avg,
+            min,
+            max,
+            priceRange: `¥${min.toLocaleString()}-¥${max.toLocaleString()}`
+        };
+    });
+
+    // 件数が多い順にソート
+    results.sort((a, b) => b.count - a.count);
+
+    return results;
+}
+
+// 商品名の正規化（色・サイズ除去）
+function normalizeProductName(name) {
+    // 色を除去
+    const colors = ['黒', '白', 'ブラック', 'ホワイト', 'グレー', 'ベージュ', 'ネイビー', 'カーキ', '紺', '茶'];
+    let normalized = name;
+
+    colors.forEach(color => {
+        normalized = normalized.replace(new RegExp(color, 'g'), '');
+    });
+
+    // サイズを除去
+    normalized = normalized.replace(/[0-9]{1,2}号/g, '');
+    normalized = normalized.replace(/サイズ[SML]/g, '');
+    normalized = normalized.replace(/\b(XS|S|M|L|XL|XXL|[0-9]{2,3})\b/g, '');
+
+    // 余分なスペースを削除
+    normalized = normalized.replace(/\s+/g, ' ').trim();
+
+    return normalized;
+}
+
+// 結果表示
+function displayFusionResults(results) {
+    // 統計更新
+    const brandSet = new Set(results.map(r => r.brand));
+    const totalItems = results.reduce((sum, r) => sum + r.count, 0);
+    const avgPrice = Math.floor(results.reduce((sum, r) => sum + r.avg, 0) / results.length);
+
+    document.getElementById('fusionTotalItems').textContent = totalItems;
+    document.getElementById('fusionGroupedItems').textContent = results.length;
+    document.getElementById('fusionAvgPrice').textContent = `¥${avgPrice.toLocaleString()}`;
+    document.getElementById('fusionBrandCount').textContent = brandSet.size;
+
+    // テーブル作成
+    const tableContainer = document.getElementById('fusionTable');
+    let html = `
+        <table style="width: 100%; border-collapse: collapse; color: white;">
+            <thead>
+                <tr style="background: rgba(0, 255, 163, 0.1); border-bottom: 2px solid rgba(0, 255, 163, 0.3);">
+                    <th style="padding: 15px; text-align: left;">ブランド</th>
+                    <th style="padding: 15px; text-align: left;">商品名</th>
+                    <th style="padding: 15px; text-align: center;">件数</th>
+                    <th style="padding: 15px; text-align: right;">中央値</th>
+                    <th style="padding: 15px; text-align: right;">平均価格</th>
+                    <th style="padding: 15px; text-align: right;">価格帯</th>
+                    <th style="padding: 15px; text-align: center;">アクション</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    results.forEach((item, index) => {
+        html += `
+            <tr style="border-bottom: 1px solid rgba(0, 255, 163, 0.1); transition: all 0.3s ease;" 
+                onmouseover="this.style.background='rgba(0, 255, 163, 0.05)'" 
+                onmouseout="this.style.background='transparent'">
+                <td style="padding: 15px;">${item.brand}</td>
+                <td style="padding: 15px;">${item.groupName}</td>
+                <td style="padding: 15px; text-align: center;">${item.count}</td>
+                <td style="padding: 15px; text-align: right; color: #00FFA3; font-weight: 700;">¥${item.median.toLocaleString()}</td>
+                <td style="padding: 15px; text-align: right;">¥${item.avg.toLocaleString()}</td>
+                <td style="padding: 15px; text-align: right; font-size: 0.9em; color: rgba(148, 163, 184, 0.9);">${item.priceRange}</td>
+                <td style="padding: 15px; text-align: center;">
+                    <button onclick="addFusionItemToStock(${index})" 
+                            style="padding: 8px 16px; background: linear-gradient(135deg, #00FFA3 0%, #00B8D9 100%); border: none; border-radius: 8px; color: #000; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                        📦 ストック追加
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+
+    html += `
+            </tbody>
+        </table>
+    `;
+
+    tableContainer.innerHTML = html;
+}
+
+// ストック追加
+function addFusionItemToStock(index) {
+    const item = fusionResults[index];
+    
+    if (typeof addToStock === 'function') {
+        addToStock({
+            brandName: item.brand,
+            groupName: item.groupName,
+            count: item.count,
+            modePrice: `¥${item.median.toLocaleString()}`,
+            productCode: '',
+            priceRange: item.priceRange
+        });
+    } else {
+        alert('ストック機能が利用できません');
+    }
+}
+
+// 全てストック追加
+function addAllToStock() {
+    if (!fusionResults || fusionResults.length === 0) {
+        alert('統合結果がありません');
+        return;
+    }
+
+    if (!confirm(`${fusionResults.length}件の商品を全てストックに追加しますか？`)) {
+        return;
+    }
+
+    fusionResults.forEach(item => {
+        if (typeof addToStock === 'function') {
+            addToStock({
+                brandName: item.brand,
+                groupName: item.groupName,
+                count: item.count,
+                modePrice: `¥${item.median.toLocaleString()}`,
+                productCode: '',
+                priceRange: item.priceRange
+            });
+        }
+    });
+
+    alert(`${fusionResults.length}件をストックに追加しました！`);
+}
+
+// CSVエクスポート
+function exportFusionResults() {
+    if (!fusionResults || fusionResults.length === 0) {
+        alert('エクスポートする結果がありません');
+        return;
+    }
+
+    const headers = ['ブランド', 'グループ名', '件数', '中央値', '平均価格', '価格帯'];
+    const rows = fusionResults.map(item => [
+        item.brand,
+        item.groupName,
+        item.count,
+        item.median,
+        item.avg,
+        item.priceRange
+    ]);
+
+    const csvContent = [
+        headers.join(','),
+        ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+    ].join('\n');
+
+    const bom = '\uFEFF';
+    const blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `fusion_results_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+
+    alert('統合結果をエクスポートしました');
+}

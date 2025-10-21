@@ -157,7 +157,19 @@
             </div>
         </header>
 
-        <!-- CSVアップロードセクション -->
+        <!-- モード切替タブ -->
+        <div class="mode-tabs">
+            <button class="mode-tab active" data-mode="yahoo" onclick="switchMode('yahoo')">
+                💰 Yahoo検索モード
+            </button>
+            <button class="mode-tab" data-mode="fusion" onclick="switchMode('fusion')">
+                📊 CSV統合モード
+            </button>
+        </div>
+
+        <!-- Yahoo検索モード -->
+        <div id="yahooMode" class="mode-content active">
+            <!-- CSVアップロードセクション -->
         <div class="upload-section">
             <div class="upload-container" onclick="document.getElementById('csvFile').click()">
                 <input type="file" id="csvFile" accept=".csv" style="display: none;">
@@ -259,8 +271,102 @@
                 </div>
             </div>
         </div>
+        </div>
+        <!-- Yahoo検索モード ここまで -->
+
+        <!-- CSV統合モード -->
+        <div id="fusionMode" class="mode-content">
+            <div class="upload-section">
+                <div class="upload-container" onclick="document.getElementById('fusionFile').click()">
+                    <input type="file" id="fusionFile" accept=".csv,.xlsx,.xls" style="display: none;">
+                    <div class="upload-icon">
+                        <div class="cube-3d">
+                            <div class="cube-face cube-front"></div>
+                            <div class="cube-face cube-back"></div>
+                            <div class="cube-face cube-right"></div>
+                            <div class="cube-face cube-left"></div>
+                            <div class="cube-face cube-top"></div>
+                            <div class="cube-face cube-bottom"></div>
+                            <div class="cube-core"></div>
+                        </div>
+                    </div>
+                    <div class="upload-text">メルカリデータをインポート</div>
+                    <div class="upload-subtext">CSV/Excel形式のメルカリ商品データに対応</div>
+                    <div id="fusionFileName"></div>
+                    <div class="format-info">
+                        <strong>📋 機能</strong><br>
+                        ✓ ブランド名の正規化<br>
+                        ✓ 商品名の統合（色・サイズ別）<br>
+                        ✓ 価格中央値の算出<br>
+                        <small>※統合結果はストックリストに保存できます</small>
+                    </div>
+                </div>
+
+                <button id="fusionProcessBtn" class="start-button" disabled>
+                    PROCESS DATA
+                </button>
+            </div>
+
+            <!-- 統合結果表示 -->
+            <div id="fusionResults" style="display: none; margin-top: 30px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 class="results-header">統合結果</h2>
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="exportFusionResults()" class="settings-btn">
+                            📥 CSVエクスポート
+                        </button>
+                        <button onclick="addAllToStock()" class="settings-btn" style="background: linear-gradient(135deg, #00FFA3 0%, #00B8D9 100%); color: #000;">
+                            📦 全てストックに追加
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 統計情報 -->
+                <div class="stats-grid" style="display: grid;">
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-value" id="fusionTotalItems">0</div>
+                        <div class="stat-label">Total Items</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🔄</div>
+                        <div class="stat-value" id="fusionGroupedItems">0</div>
+                        <div class="stat-label">Grouped Items</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-value" id="fusionAvgPrice">¥0</div>
+                        <div class="stat-label">Avg Price</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">✨</div>
+                        <div class="stat-value" id="fusionBrandCount">0</div>
+                        <div class="stat-label">Brands</div>
+                    </div>
+                </div>
+
+                <!-- 結果テーブル -->
+                <div class="results-section">
+                    <div id="fusionTable" style="overflow-x: auto;">
+                        <!-- ここに統合結果テーブルが表示される -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- CSV統合モード ここまで -->
+
     </div>
 
+    <!-- SheetJS for Excel support -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+
+    <!-- Brand Dictionary -->
+    <script src="brands.js"></script>
+
+    <!-- Stock Manager -->
+    <script src="stock-manager-v2.js"></script>
+
+    <!-- Main App -->
     <script src="app.js"></script>
 </body>
 </html>
