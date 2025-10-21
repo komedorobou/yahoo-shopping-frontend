@@ -108,6 +108,8 @@ function reloadFilesWithEncoding(encoding) {
 
 // DOM要素の初期化（DOMContentLoaded後に実行）
 window.addEventListener('DOMContentLoaded', () => {
+    console.log('[Fusion Studio] DOMContentLoaded イベント発火');
+
     // パーティクル生成
     createParticles();
 
@@ -117,11 +119,20 @@ window.addEventListener('DOMContentLoaded', () => {
     const similarityThreshold = document.getElementById('similarityThreshold');
     const encoding = document.getElementById('encoding');
 
+    console.log('[Fusion Studio] DOM要素取得:', {
+        uploadArea: !!uploadArea,
+        fileInput: !!fileInput,
+        similarityThreshold: !!similarityThreshold,
+        encoding: !!encoding
+    });
+
     // 必須要素のチェック
     if (!uploadArea || !fileInput) {
-        console.error('CSV統合モードの必須要素が見つかりません');
+        console.error('[Fusion Studio] CSV統合モードの必須要素が見つかりません');
         return;
     }
+
+    console.log('[Fusion Studio] イベントリスナー設定開始');
 
     // スライダーの値をリアルタイムで表示
     if (similarityThreshold) {
@@ -166,6 +177,8 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 function handleFiles(files) {
+    console.log('[Fusion Studio] handleFiles 呼び出し:', files.length, 'ファイル');
+
     const fileList = Array.from(files).filter(file =>
         file.type === 'text/csv' ||
         file.name.endsWith('.csv') ||
@@ -174,6 +187,8 @@ function handleFiles(files) {
         file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
         file.type === 'application/vnd.ms-excel'
     );
+
+    console.log('[Fusion Studio] フィルター後:', fileList.length, 'ファイル');
 
     if (fileList.length === 0) {
         showError('CSV/Excelファイルを選択してください');
@@ -408,23 +423,31 @@ function parseCSV(content) {
 }
 
 function mergeCSV() {
+    console.log('[Fusion Studio] mergeCSV 呼び出し, csvFiles:', csvFiles.length);
+
     if (csvFiles.length === 0) {
+        console.warn('[Fusion Studio] CSVファイルが選択されていません');
         showError('CSVファイルを選択してください');
         return;
     }
 
+    console.log('[Fusion Studio] 結合処理開始');
     hideMessages();
     isGrouped = false;
     groupedData = null;
     window.groupedData = null; // グローバル変数もクリア
     document.getElementById('groupCountCard').style.display = 'none';
-    
+
     const mergeType = document.getElementById('mergeType').value;
     const includeHeaders = document.getElementById('includeHeaders').checked;
     const removeDuplicates = document.getElementById('removeDuplicates').checked;
 
+    console.log('[Fusion Studio] 結合設定:', { mergeType, includeHeaders, removeDuplicates });
+
     try {
+        console.log('[Fusion Studio] CSVパース開始');
         const parsedFiles = csvFiles.map(file => parseCSV(file.content));
+        console.log('[Fusion Studio] CSVパース完了:', parsedFiles.length, 'ファイル');
         
         if (mergeType === 'vertical') {
             mergedData = [];
