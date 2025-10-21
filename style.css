@@ -65,13 +65,8 @@
             max-width: 95%;
             width: 1800px;
             margin: 0 auto;
-            background: rgba(17, 24, 39, 0.4);
-            border-radius: 32px;
-            box-shadow:
-                0 30px 100px rgba(0, 255, 163, 0.1),
-                0 0 100px rgba(0, 184, 217, 0.05);
+            background: transparent;
             overflow: hidden;
-            backdrop-filter: blur(20px);
             min-height: 100vh;
         }
 
