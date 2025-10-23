@@ -21,8 +21,8 @@
 
         .stock-header {
             padding: 20px;
-            background: rgba(255,255,255,0.1);
-            border-bottom: 1px solid rgba(255,255,255,0.2);
+            background: rgba(102, 126, 234, 0.15);
+            border-bottom: 1px solid rgba(102, 126, 234, 0.3);
             color: white;
         }
 
@@ -44,7 +44,7 @@
         }
 
         .stock-item {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(102, 126, 234, 0.1);
             border-radius: 10px;
             padding: 15px;
             margin-bottom: 15px;
@@ -73,7 +73,7 @@
 
         .stock-item-title {
             font-weight: 600;
-            color: #333;
+            color: rgba(255, 255, 255, 0.9);
             flex: 1;
         }
 
@@ -106,25 +106,25 @@
         }
 
         .stock-detail-label {
-            color: #666;
+            color: rgba(255, 255, 255, 0.6);
             font-size: 0.8rem;
         }
 
         .stock-detail-value {
-            color: #333;
+            color: rgba(255, 255, 255, 0.9);
             font-weight: 500;
         }
 
         .stock-actions {
             padding: 20px;
-            background: rgba(255,255,255,0.1);
-            border-top: 1px solid rgba(255,255,255,0.2);
+            background: rgba(102, 126, 234, 0.15);
+            border-top: 1px solid rgba(102, 126, 234, 0.3);
         }
 
         .btn-export-stock {
             width: 100%;
-            background: white;
-            color: #667eea;
+            background: linear-gradient(135deg, #667EEA 0%, #8B5CF6 100%);
+            color: white;
             border: none;
             padding: 12px;
             border-radius: 10px;
@@ -381,9 +381,9 @@
             padding: 2px;
             background: linear-gradient(135deg, #667EEA, #FF6B9D, #FEC163, #667EEA);
             background-size: 300% 300%;
-            -webkit-mask: 
-                linear-gradient(#fff 0 0) content-box, 
-                linear-gradient(#fff 0 0);
+            -webkit-mask:
+                linear-gradient(rgba(255,255,255,1) 0 0) content-box,
+                linear-gradient(rgba(255,255,255,1) 0 0);
             -webkit-mask-composite: xor;
             mask-composite: exclude;
             animation: gradient-border 4s ease infinite;
@@ -539,8 +539,8 @@
 
         .format-badge {
             padding: 10px 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
             border-radius: 100px;
             color: rgba(255, 255, 255, 0.8);
             font-size: 0.9em;
@@ -759,15 +759,17 @@
         }
 
         .btn-secondary {
-            background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);
-            color: #374151;
+            background: rgba(102, 126, 234, 0.1);
+            color: rgba(255, 255, 255, 0.9);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
         }
 
         .btn-secondary:hover {
-            background: linear-gradient(135deg, #E5E7EB 0%, #D1D5DB 100%);
+            background: rgba(102, 126, 234, 0.2);
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            border-color: rgba(102, 126, 234, 0.5);
         }
 
         .btn-cleaning {
@@ -1154,7 +1156,7 @@
         }
 
         .modal-body::-webkit-scrollbar-track {
-            background: #F3F4F6;
+            background: rgba(102, 126, 234, 0.1);
             border-radius: 10px;
         }
 
