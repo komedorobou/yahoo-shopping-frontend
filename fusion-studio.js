@@ -1934,11 +1934,6 @@ function displayPreview() {
                 row.forEach(cell => {
                     tableHTML += `<th>${escapeHtml(cell)}</th>`;
                 });
-                // グループ集計結果の場合、アクション列を追加
-                const isSummaryTable = (row.includes('最頻値価格') || row.includes('価格最頻値')) && (row.includes('価格帯') || row.includes('価格分布'));
-                if (isSummaryTable) {
-                    tableHTML += '<th>アクション</th>';
-                }
                 tableHTML += '</tr></thead><tbody>';
             } else {
                 if (index === 1) tableHTML += '<tbody>';
@@ -1946,30 +1941,6 @@ function displayPreview() {
                 row.forEach(cell => {
                     tableHTML += `<td>${escapeHtml(cell)}</td>`;
                 });
-
-                // グループ集計結果の場合、ストックボタンを追加
-                const headerRow = mergedData[0];
-                const isSummaryTable = headerRow && (headerRow.includes('最頻値価格') || headerRow.includes('価格最頻値')) && (headerRow.includes('価格帯') || headerRow.includes('価格分布'));
-                if (isSummaryTable && index > 0) {
-                    // データを準備
-                    const stockData = {
-                        brandName: row[0],
-                        groupName: row[1],
-                        count: row[2],
-                        modePrice: row[3],
-                        productCode: row[4],
-                        priceRange: row[5]
-                    };
-                    const jsonData = JSON.stringify(stockData).replace(/"/g, '&quot;');
-                    tableHTML += `<td>
-                        <button class="add-to-stock-btn"
-                                data-stock-info="${jsonData}"
-                                onclick='addToStock(${JSON.stringify(stockData).replace(/'/g, "&#39;")})'>
-                            + ストック
-                        </button>
-                    </td>`;
-                }
-
                 tableHTML += '</tr>';
             }
         });
