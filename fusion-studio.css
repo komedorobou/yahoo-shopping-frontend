@@ -1751,7 +1751,7 @@
             background: none;
             cursor: pointer;
             font-weight: 600;
-            color: #374151;
+            color: rgba(255, 255, 255, 0.9) !important;
         }
 
         .grouping-option .checkbox-label:hover {
