@@ -1475,12 +1475,8 @@
         .preview-table table td:nth-child(7) {
             font-family: 'Courier New', monospace;
             font-size: 0.85em;
-            background: rgba(139, 92, 246, 0.1);
-            color: rgba(255, 255, 255, 0.9);
             font-weight: 500;
             text-align: left;
-            border-radius: 6px;
-            padding: 8px 12px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -1492,10 +1488,6 @@
             white-space: normal;
             word-wrap: break-word;
             max-width: none;
-            position: relative;
-            z-index: 100;
-            background: rgba(139, 92, 246, 0.2);
-            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
         }
 
         .grouping-stat {
