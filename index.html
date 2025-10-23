@@ -407,7 +407,7 @@
                 <div class="debug-info" id="debugInfo"></div>
 
                 <div class="cleaning-options">
-                    <h3>削除するパターンを選択：</h3>
+                    <h3 style="color: rgba(255, 255, 255, 0.95); font-weight: 600;">削除するパターンを選択：</h3>
 
                     <div class="cleaning-option">
                         <label>
@@ -532,68 +532,68 @@
             </div>
             <div class="modal-body">
                 <div class="grouping-options">
-                    <h3>グループ化設定：</h3>
+                    <h3 style="color: rgba(255, 255, 255, 0.95); font-weight: 600;">グループ化設定：</h3>
 
                     <div class="grouping-option">
-                        <label>類似度の閾値</label>
+                        <label style="color: rgba(255, 255, 255, 0.9); font-weight: 600;">類似度の閾値</label>
                         <div class="slider-container">
                             <input type="range" id="similarityThreshold" class="slider" min="30" max="100" value="80">
                             <span class="slider-value" id="similarityValue">80%</span>
                         </div>
-                        <small>商品名がどれくらい似ていれば同じグループにするか（高いほど厳密）</small>
+                        <small style="color: rgba(255, 255, 255, 0.7);">商品名がどれくらい似ていれば同じグループにするか（高いほど厳密）</small>
                     </div>
 
                     <div class="grouping-option">
-                        <label class="checkbox-label">
+                        <label class="checkbox-label" style="color: rgba(255, 255, 255, 0.9);">
                             <input type="checkbox" id="ignoreColors" checked>
                             <span>色名を無視してグループ化</span>
                         </label>
-                        <small>Black, Navy, Gray等の色表記を無視して同一商品として扱います</small>
+                        <small style="color: rgba(255, 255, 255, 0.7);">Black, Navy, Gray等の色表記を無視して同一商品として扱います</small>
                     </div>
 
                     <div class="grouping-option">
-                        <label class="checkbox-label">
+                        <label class="checkbox-label" style="color: rgba(255, 255, 255, 0.9);">
                             <input type="checkbox" id="ignoreSizes" checked>
                             <span>サイズ表記を無視してグループ化</span>
                         </label>
-                        <small>S, M, L, XL等のサイズ表記を無視して同一商品として扱います</small>
+                        <small style="color: rgba(255, 255, 255, 0.7);">S, M, L, XL等のサイズ表記を無視して同一商品として扱います</small>
                     </div>
 
                     <div class="grouping-option">
-                        <label class="checkbox-label">
+                        <label class="checkbox-label" style="color: rgba(255, 255, 255, 0.9);">
                             <input type="checkbox" id="ignoreYears" checked>
                             <span>年代表記を無視してグループ化</span>
                         </label>
-                        <small>2023, 2024等の年代表記を無視して同一商品として扱います</small>
+                        <small style="color: rgba(255, 255, 255, 0.7);">2023, 2024等の年代表記を無視して同一商品として扱います</small>
                     </div>
 
                     <div class="grouping-option">
-                        <label class="checkbox-label">
+                        <label class="checkbox-label" style="color: rgba(255, 255, 255, 0.9);">
                             <input type="checkbox" id="useProductCode">
                             <span>商品コードのみでグループ化</span>
                         </label>
-                        <small>商品名の類似度を無視し、商品コード列のみでグループ化します</small>
+                        <small style="color: rgba(255, 255, 255, 0.7);">商品名の類似度を無視し、商品コード列のみでグループ化します</small>
                     </div>
 
                     <div class="grouping-option">
-                        <label for="sortOrder">グループの並び順:</label>
-                        <select id="sortOrder" style="width: 100%; padding: 8px; border: 2px solid #ddd; border-radius: 5px;">
-                            <option value="count">アイテム数が多い順</option>
-                            <option value="name">商品名順（アルファベット）</option>
-                            <option value="price">価格順（高い順）</option>
+                        <label for="sortOrder" style="color: rgba(255, 255, 255, 0.9); font-weight: 600;">グループの並び順:</label>
+                        <select id="sortOrder" style="width: 100%; padding: 8px; background: rgba(102, 126, 234, 0.1); border: 2px solid rgba(102, 126, 234, 0.3); border-radius: 5px; color: white;">
+                            <option value="count" style="background: #1a1a2e; color: white;">アイテム数が多い順</option>
+                            <option value="name" style="background: #1a1a2e; color: white;">商品名順（アルファベット）</option>
+                            <option value="price" style="background: #1a1a2e; color: white;">価格順（高い順）</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="group-preview" id="groupPreview" style="display: none;">
-                    <h4>グループ化プレビュー
-                        <select id="previewCount" onchange="updatePreviewCount()" style="margin-left: 10px; padding: 5px; border-radius: 5px;">
-                            <option value="5">最初の5グループ</option>
-                            <option value="10">最初の10グループ</option>
-                            <option value="20">最初の20グループ</option>
-                            <option value="50">最初の50グループ</option>
-                            <option value="100">最初の100グループ</option>
-                            <option value="all">全グループを表示</option>
+                    <h4 style="color: rgba(255, 255, 255, 0.95);">グループ化プレビュー
+                        <select id="previewCount" onchange="updatePreviewCount()" style="margin-left: 10px; padding: 5px; background: rgba(102, 126, 234, 0.1); border: 2px solid rgba(102, 126, 234, 0.3); border-radius: 5px; color: white;">
+                            <option value="5" style="background: #1a1a2e; color: white;">最初の5グループ</option>
+                            <option value="10" style="background: #1a1a2e; color: white;">最初の10グループ</option>
+                            <option value="20" style="background: #1a1a2e; color: white;">最初の20グループ</option>
+                            <option value="50" style="background: #1a1a2e; color: white;">最初の50グループ</option>
+                            <option value="100" style="background: #1a1a2e; color: white;">最初の100グループ</option>
+                            <option value="all" style="background: #1a1a2e; color: white;">全グループを表示</option>
                         </select>
                     </h4>
                     <div id="groupsList" style="max-height: 500px; overflow-y: auto;"></div>
