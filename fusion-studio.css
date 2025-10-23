@@ -1051,7 +1051,7 @@
         }
 
         th {
-            background: linear-gradient(135deg, #667EEA 0%, #8B5CF6 100%);
+            background: #8B5CF6;
             color: white;
             padding: 14px 16px;
             text-align: left;
@@ -1063,7 +1063,7 @@
             font-size: 0.85em;
             white-space: nowrap;
             z-index: 10;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3), inset 0 -1px 0 rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3), inset 0 -1px 0 rgba(255, 255, 255, 0.1);
             position: relative;
             overflow: hidden;
         }
