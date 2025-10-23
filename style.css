@@ -983,27 +983,15 @@
             box-shadow: 0 5px 20px rgba(0, 255, 163, 0.3);
         }
 
-        /* CSV統合モード時の紫ネオングロー */
+        /* CSV統合モード時の紫色（光なし） */
         body.fusion-mode .settings-btn {
             background: rgba(139, 92, 246, 0.1);
             border-color: rgba(139, 92, 246, 0.5);
             color: #8B5CF6;
-            box-shadow: 0 0 20px rgba(139, 92, 246, 0.4), 0 0 40px rgba(139, 92, 246, 0.2);
-            animation: purpleNeonPulse 2s ease-in-out infinite;
         }
 
         body.fusion-mode .settings-btn:hover {
             background: rgba(139, 92, 246, 0.2);
-            box-shadow: 0 0 30px rgba(139, 92, 246, 0.6), 0 0 60px rgba(139, 92, 246, 0.3);
-        }
-
-        @keyframes purpleNeonPulse {
-            0%, 100% {
-                box-shadow: 0 0 20px rgba(139, 92, 246, 0.4), 0 0 40px rgba(139, 92, 246, 0.2);
-            }
-            50% {
-                box-shadow: 0 0 30px rgba(139, 92, 246, 0.6), 0 0 60px rgba(139, 92, 246, 0.4);
-            }
         }
 
         /* 送信方法選択ラジオボタン */
@@ -1083,13 +1071,11 @@
             box-shadow: 0 0 15px rgba(0, 255, 163, 0.8);
         }
 
-        /* CSV統合モード時のタブ紫ネオングロー */
+        /* CSV統合モード時のタブ紫色（光なし） */
         body.fusion-mode .mode-tab {
             background: rgba(139, 92, 246, 0.1);
             border-color: rgba(139, 92, 246, 0.4);
             color: rgba(139, 92, 246, 0.9);
-            box-shadow: 0 0 20px rgba(139, 92, 246, 0.3), 0 0 40px rgba(139, 92, 246, 0.15);
-            animation: purpleNeonPulse 2s ease-in-out infinite;
         }
 
         body.fusion-mode .mode-tab::before {
@@ -1099,19 +1085,16 @@
         body.fusion-mode .mode-tab:hover {
             background: rgba(139, 92, 246, 0.15);
             border-color: rgba(139, 92, 246, 0.6);
-            box-shadow: 0 0 30px rgba(139, 92, 246, 0.5), 0 0 60px rgba(139, 92, 246, 0.3);
         }
 
         body.fusion-mode .mode-tab.active {
             background: linear-gradient(135deg, rgba(139, 92, 246, 0.25) 0%, rgba(124, 58, 237, 0.25) 100%);
             border-color: #8B5CF6;
             color: #8B5CF6;
-            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4), inset 0 0 20px rgba(139, 92, 246, 0.15), 0 0 40px rgba(139, 92, 246, 0.3);
         }
 
         body.fusion-mode .mode-tab.active::after {
             background: linear-gradient(90deg, #8B5CF6, #7C3AED);
-            box-shadow: 0 0 15px rgba(139, 92, 246, 0.8);
         }
 
         /* モードコンテンツ */
