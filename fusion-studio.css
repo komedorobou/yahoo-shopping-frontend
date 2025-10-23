@@ -898,56 +898,56 @@
         }
 
         .btn-cleaning {
-            background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+            background: linear-gradient(135deg, #667EEA 0%, #8B5CF6 100%);
             color: white;
             padding: 14px 24px;
             font-size: 1em;
-            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
         }
 
         .btn-cleaning:hover {
             transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 12px 35px rgba(139, 92, 246, 0.4);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
         }
 
         .btn-brand {
-            background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+            background: linear-gradient(135deg, #667EEA 0%, #8B5CF6 100%);
             color: white;
             padding: 14px 24px;
             font-size: 1em;
-            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
         }
 
         .btn-brand:hover {
             transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 12px 35px rgba(139, 92, 246, 0.4);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
         }
 
         .btn-group {
-            background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+            background: linear-gradient(135deg, #667EEA 0%, #8B5CF6 100%);
             color: white;
             padding: 14px 24px;
             font-size: 1em;
-            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
         }
 
         .btn-group:hover {
             transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 12px 35px rgba(139, 92, 246, 0.4);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
         }
 
         /* 集計ボタンのスタイル */
         .btn-summary {
-            background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+            background: linear-gradient(135deg, #667EEA 0%, #8B5CF6 100%);
             color: white;
             padding: 14px 24px;
             font-size: 1em;
-            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
         }
 
         .btn-summary:hover {
             transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 12px 35px rgba(139, 92, 246, 0.4);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
         }
 
         /* 集計後のテーブルスタイル */
@@ -966,16 +966,16 @@
 
         /* 集計ボタンのスタイル */
         .btn-summary {
-            background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+            background: linear-gradient(135deg, #667EEA 0%, #8B5CF6 100%);
             color: white;
             padding: 14px 24px;
             font-size: 1em;
-            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
         }
 
         .btn-summary:hover {
             transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 12px 35px rgba(139, 92, 246, 0.4);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
         }
 
         /* 集計後のテーブルスタイル */
@@ -1064,8 +1064,8 @@
         .preview-header-buttons .btn-brand,
         .preview-header-buttons .btn-group,
         .preview-header-buttons .btn-summary {
-            background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
-            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+            background: linear-gradient(135deg, #667EEA 0%, #8B5CF6 100%);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
         }
 
         .preview-header-buttons .btn-cleaning:hover,
@@ -1073,7 +1073,7 @@
         .preview-header-buttons .btn-group:hover,
         .preview-header-buttons .btn-summary:hover {
             transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 12px 35px rgba(139, 92, 246, 0.4);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
         }
 
         .preview-table {
