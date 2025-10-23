@@ -898,16 +898,16 @@
         }
 
         .btn-cleaning {
-            background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+            background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
             color: white;
             padding: 14px 24px;
             font-size: 1em;
-            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
         }
 
         .btn-cleaning:hover {
             transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 12px 35px rgba(245, 158, 11, 0.4);
+            box-shadow: 0 12px 35px rgba(139, 92, 246, 0.4);
         }
 
         .btn-brand {
@@ -938,16 +938,16 @@
 
         /* 集計ボタンのスタイル */
         .btn-summary {
-            background: linear-gradient(135deg, #EC4899 0%, #BE185D 100%);
+            background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
             color: white;
             padding: 14px 24px;
             font-size: 1em;
-            box-shadow: 0 8px 25px rgba(236, 72, 153, 0.3);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
         }
 
         .btn-summary:hover {
             transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 12px 35px rgba(236, 72, 153, 0.4);
+            box-shadow: 0 12px 35px rgba(139, 92, 246, 0.4);
         }
 
         /* 集計後のテーブルスタイル */
@@ -966,16 +966,16 @@
 
         /* 集計ボタンのスタイル */
         .btn-summary {
-            background: linear-gradient(135deg, #EC4899 0%, #BE185D 100%);
+            background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
             color: white;
             padding: 14px 24px;
             font-size: 1em;
-            box-shadow: 0 8px 25px rgba(236, 72, 153, 0.3);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
         }
 
         .btn-summary:hover {
             transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 12px 35px rgba(236, 72, 153, 0.4);
+            box-shadow: 0 12px 35px rgba(139, 92, 246, 0.4);
         }
 
         /* 集計後のテーブルスタイル */
