@@ -20,48 +20,103 @@ let currentPlan = 'starter'
 
 // 認証状態監視
 supabaseAuth.auth.onAuthStateChange(async (event, session) => {
-    console.log('Auth event:', event)
+    console.log('🔐 Auth event:', event)
 
-    if (event === 'SIGNED_IN' && session) {
-        currentUser = session.user
+    try {
+        if (event === 'SIGNED_IN' && session) {
+            console.log('✅ ログイン成功:', session.user.email)
+            currentUser = session.user
 
-        // プラン情報取得
-        const { data: profile } = await supabaseAuth
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single()
+            // プラン情報取得（エラーハンドリング付き）
+            try {
+                console.log('📊 プロフィール取得中...')
+                const { data: profile, error: profileError } = await supabaseAuth
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', session.user.id)
+                    .single()
 
-        if (profile) {
-            currentPlan = profile.plan
-            localStorage.setItem('profitMatrixPlan', profile.plan)
+                if (profileError) {
+                    console.warn('⚠️ プロフィール取得エラー:', profileError.message)
+                    console.log('デフォルトプラン(starter)を使用します')
+                    currentPlan = 'starter'
+                } else if (profile) {
+                    console.log('✅ プロフィール取得成功:', profile)
+                    currentPlan = profile.plan || 'starter'
+                    localStorage.setItem('profitMatrixPlan', profile.plan)
 
-            // トライアル期限チェック
-            if (profile.subscription_status === 'trial') {
-                const trialEnds = new Date(profile.trial_ends_at)
-                if (trialEnds < new Date()) {
-                    currentPlan = 'starter' // トライアル終了後はstarterに制限
-                    alert('⚠️ トライアル期間が終了しました。プランをアップグレードしてください。')
+                    // トライアル期限チェック
+                    if (profile.subscription_status === 'trial') {
+                        const trialEnds = new Date(profile.trial_ends_at)
+                        if (trialEnds < new Date()) {
+                            currentPlan = 'starter'
+                            alert('⚠️ トライアル期間が終了しました。プランをアップグレードしてください。')
+                        }
+                    }
+                } else {
+                    console.warn('⚠️ プロフィールが見つかりません。デフォルトプランを使用します。')
+                    currentPlan = 'starter'
+                }
+            } catch (profileError) {
+                console.error('❌ プロフィール取得で例外発生:', profileError)
+                currentPlan = 'starter'
+            }
+
+            // UI更新
+            console.log('🎨 UI更新開始...')
+
+            const authModal = document.getElementById('authModal')
+            const userMenu = document.getElementById('userMenu')
+            const userEmail = document.getElementById('userEmail')
+
+            if (authModal) {
+                authModal.style.display = 'none'
+                console.log('✅ 認証モーダルを非表示')
+            } else {
+                console.error('❌ authModal要素が見つかりません')
+            }
+
+            if (userMenu) {
+                userMenu.style.display = 'block'
+                console.log('✅ ユーザーメニューを表示')
+            } else {
+                console.error('❌ userMenu要素が見つかりません')
+            }
+
+            if (userEmail) {
+                userEmail.textContent = session.user.email
+                console.log('✅ メールアドレスを表示:', session.user.email)
+            } else {
+                console.error('❌ userEmail要素が見つかりません')
+            }
+
+            // APIキー確認
+            yahooApiKey = localStorage.getItem('yahooApiKey')
+            if (!yahooApiKey) {
+                console.log('⚙️ APIキーモーダルを表示')
+                const apiKeyModal = document.getElementById('apiKeyModal')
+                if (apiKeyModal) {
+                    apiKeyModal.style.display = 'flex'
                 }
             }
+
+            console.log('✅ ログイン処理完了')
+
+        } else if (event === 'SIGNED_OUT') {
+            console.log('🚪 ログアウト')
+            currentUser = null
+            currentPlan = 'starter'
+            localStorage.clear()
+
+            const authModal = document.getElementById('authModal')
+            const userMenu = document.getElementById('userMenu')
+
+            if (authModal) authModal.style.display = 'flex'
+            if (userMenu) userMenu.style.display = 'none'
         }
-
-        // UI更新
-        document.getElementById('authModal').style.display = 'none'
-        document.getElementById('userMenu').style.display = 'block'
-        document.getElementById('userEmail').textContent = session.user.email
-
-        // APIキー確認
-        if (!yahooApiKey) {
-            document.getElementById('apiKeyModal').style.display = 'flex'
-        }
-
-    } else if (event === 'SIGNED_OUT') {
-        currentUser = null
-        currentPlan = 'starter'
-        localStorage.clear()
-        document.getElementById('authModal').style.display = 'flex'
-        document.getElementById('userMenu').style.display = 'none'
+    } catch (error) {
+        console.error('❌ 認証処理でエラー発生:', error)
+        alert('認証処理中にエラーが発生しました。ページをリロードしてください。')
     }
 })
 
@@ -88,6 +143,8 @@ window.switchAuthTab = function(tab) {
 
 // ログイン処理
 window.handleLogin = async function() {
+    console.log('🔑 ログイン処理開始')
+
     const email = document.getElementById('loginEmail').value.trim()
     const password = document.getElementById('loginPassword').value
 
@@ -100,17 +157,46 @@ window.handleLogin = async function() {
     btn.textContent = 'ログイン中...'
     btn.disabled = true
 
-    const { data, error } = await supabaseAuth.auth.signInWithPassword({
-        email,
-        password
-    })
+    try {
+        console.log('📡 Supabaseに認証リクエスト送信中...')
 
-    if (error) {
+        // タイムアウト処理（10秒）
+        const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('タイムアウト: 10秒以内に応答がありませんでした')), 10000)
+        )
+
+        const loginPromise = supabaseAuth.auth.signInWithPassword({
+            email,
+            password
+        })
+
+        const { data, error } = await Promise.race([loginPromise, timeoutPromise])
+
+        if (error) {
+            console.error('❌ ログインエラー:', error)
+            let errorMessage = error.message
+
+            // エラーメッセージを日本語化
+            if (errorMessage.includes('Invalid login credentials')) {
+                errorMessage = 'メールアドレスまたはパスワードが正しくありません'
+            } else if (errorMessage.includes('Email not confirmed')) {
+                errorMessage = 'メールアドレスが確認されていません。確認メールをチェックしてください。'
+            }
+
+            alert('ログインエラー: ' + errorMessage)
+            btn.textContent = 'ログイン'
+            btn.disabled = false
+        } else {
+            console.log('✅ ログインリクエスト成功。認証イベント待機中...')
+            // 成功時はonAuthStateChangeで自動処理される
+            // ボタンはそのまま「ログイン中...」を表示
+        }
+    } catch (error) {
+        console.error('❌ ログイン処理で例外発生:', error)
         alert('ログインエラー: ' + error.message)
         btn.textContent = 'ログイン'
         btn.disabled = false
     }
-    // 成功時はonAuthStateChangeで自動処理
 }
 
 // 新規登録処理
