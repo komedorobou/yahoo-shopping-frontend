@@ -28,39 +28,33 @@ supabaseAuth.auth.onAuthStateChange(async (event, session) => {
             currentUser = session.user
 
             // プラン情報取得（エラーハンドリング付き）
-            try {
-                console.log('📊 プロフィール取得中...')
-                const { data: profile, error: profileError } = await supabaseAuth
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', session.user.id)
-                    .single()
+            console.log('📊 プロフィール取得スキップ（暫定対応）')
+            console.log('デフォルトプラン(starter)を使用します')
+            currentPlan = 'starter'
 
-                if (profileError) {
-                    console.warn('⚠️ プロフィール取得エラー:', profileError.message)
-                    console.log('デフォルトプラン(starter)を使用します')
-                    currentPlan = 'starter'
-                } else if (profile) {
-                    console.log('✅ プロフィール取得成功:', profile)
-                    currentPlan = profile.plan || 'starter'
-                    localStorage.setItem('profitMatrixPlan', profile.plan)
+            // 後でプロフィール取得を試みる（バックグラウンドで）
+            setTimeout(async () => {
+                try {
+                    console.log('🔄 バックグラウンドでプロフィール取得を試行...')
+                    const { data: profile, error: profileError } = await supabaseAuth
+                        .from('profiles')
+                        .select('*')
+                        .eq('id', session.user.id)
+                        .single()
 
-                    // トライアル期限チェック
-                    if (profile.subscription_status === 'trial') {
-                        const trialEnds = new Date(profile.trial_ends_at)
-                        if (trialEnds < new Date()) {
-                            currentPlan = 'starter'
-                            alert('⚠️ トライアル期間が終了しました。プランをアップグレードしてください。')
-                        }
+                    if (profileError) {
+                        console.warn('⚠️ プロフィール取得エラー:', profileError.message)
+                    } else if (profile) {
+                        console.log('✅ プロフィール取得成功:', profile)
+                        currentPlan = profile.plan || 'starter'
+                        localStorage.setItem('profitMatrixPlan', profile.plan)
+                    } else {
+                        console.warn('⚠️ プロフィールが見つかりません')
                     }
-                } else {
-                    console.warn('⚠️ プロフィールが見つかりません。デフォルトプランを使用します。')
-                    currentPlan = 'starter'
+                } catch (error) {
+                    console.warn('⚠️ プロフィール取得失敗（継続して使用可能）:', error.message)
                 }
-            } catch (profileError) {
-                console.error('❌ プロフィール取得で例外発生:', profileError)
-                currentPlan = 'starter'
-            }
+            }, 1000)
 
             // UI更新
             console.log('🎨 UI更新開始...')
