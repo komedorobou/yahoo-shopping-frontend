@@ -1,3 +1,13 @@
+// === 認証システム ===
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+
+// Supabase設定
+const SUPABASE_URL = 'https://czwwlrrgtmiagujdjxdr.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN6d3dscnJndG1pYWd1amRqeGRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwMDM4NDgsImV4cCI6MjA3NTU3OTg0OH0.hKmaKImJP4ApCHoL4lHk8VjzShoQowyLx_e81wkKGis';
+
+// Supabaseクライアント初期化
+const supabaseAuth = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
 // グローバル変数
 let yahooApiKey = null;
 let csvFile = null;
@@ -5,14 +15,226 @@ let searchResults = [];
 let selectedProducts = []; // 選択された商品を保持
 let partners = []; // 外注先リスト
 let currentPartnerTab = 'approved'; // 現在表示中のタブ
+let currentUser = null
+let currentPlan = 'starter'
 
-// Supabase設定
-const SUPABASE_URL = 'https://czwwlrrgtmiagujdjxdr.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN6d3dscnJndG1pYWd1amRqeGRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwMDM4NDgsImV4cCI6MjA3NTU3OTg0OH0.hKmaKImJP4ApCHoL4lHk8VjzShoQowyLx_e81wkKGis';
+// 認証状態監視
+supabaseAuth.auth.onAuthStateChange(async (event, session) => {
+    console.log('Auth event:', event)
 
-// 初期化
-document.addEventListener('DOMContentLoaded', () => {
-    // LocalStorageからAPIキーを取得
+    if (event === 'SIGNED_IN' && session) {
+        currentUser = session.user
+
+        // プラン情報取得
+        const { data: profile } = await supabaseAuth
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single()
+
+        if (profile) {
+            currentPlan = profile.plan
+            localStorage.setItem('profitMatrixPlan', profile.plan)
+
+            // トライアル期限チェック
+            if (profile.subscription_status === 'trial') {
+                const trialEnds = new Date(profile.trial_ends_at)
+                if (trialEnds < new Date()) {
+                    currentPlan = 'starter' // トライアル終了後はstarterに制限
+                    alert('⚠️ トライアル期間が終了しました。プランをアップグレードしてください。')
+                }
+            }
+        }
+
+        // UI更新
+        document.getElementById('authModal').style.display = 'none'
+        document.getElementById('userMenu').style.display = 'block'
+        document.getElementById('userEmail').textContent = session.user.email
+
+        // APIキー確認
+        if (!yahooApiKey) {
+            document.getElementById('apiKeyModal').style.display = 'flex'
+        }
+
+    } else if (event === 'SIGNED_OUT') {
+        currentUser = null
+        currentPlan = 'starter'
+        localStorage.clear()
+        document.getElementById('authModal').style.display = 'flex'
+        document.getElementById('userMenu').style.display = 'none'
+    }
+})
+
+// タブ切り替え
+window.switchAuthTab = function(tab) {
+    if (tab === 'login') {
+        document.getElementById('loginForm').style.display = 'block'
+        document.getElementById('signupForm').style.display = 'none'
+        document.getElementById('resetForm').style.display = 'none'
+        document.getElementById('loginTab').style.background = 'linear-gradient(135deg, #00FFA3 0%, #00B8D9 100%)'
+        document.getElementById('loginTab').style.color = '#000'
+        document.getElementById('signupTab').style.background = 'rgba(255, 255, 255, 0.1)'
+        document.getElementById('signupTab').style.color = 'white'
+    } else {
+        document.getElementById('loginForm').style.display = 'none'
+        document.getElementById('signupForm').style.display = 'block'
+        document.getElementById('resetForm').style.display = 'none'
+        document.getElementById('signupTab').style.background = 'linear-gradient(135deg, #00FFA3 0%, #00B8D9 100%)'
+        document.getElementById('signupTab').style.color = '#000'
+        document.getElementById('loginTab').style.background = 'rgba(255, 255, 255, 0.1)'
+        document.getElementById('loginTab').style.color = 'white'
+    }
+}
+
+// ログイン処理
+window.handleLogin = async function() {
+    const email = document.getElementById('loginEmail').value.trim()
+    const password = document.getElementById('loginPassword').value
+
+    if (!email || !password) {
+        alert('メールアドレスとパスワードを入力してください')
+        return
+    }
+
+    const btn = document.getElementById('loginBtn')
+    btn.textContent = 'ログイン中...'
+    btn.disabled = true
+
+    const { data, error } = await supabaseAuth.auth.signInWithPassword({
+        email,
+        password
+    })
+
+    if (error) {
+        alert('ログインエラー: ' + error.message)
+        btn.textContent = 'ログイン'
+        btn.disabled = false
+    }
+    // 成功時はonAuthStateChangeで自動処理
+}
+
+// 新規登録処理
+window.handleSignup = async function() {
+    const email = document.getElementById('signupEmail').value.trim()
+    const password = document.getElementById('signupPassword').value
+    const passwordConfirm = document.getElementById('signupPasswordConfirm').value
+
+    if (!email || !password || !passwordConfirm) {
+        alert('全ての項目を入力してください')
+        return
+    }
+
+    if (password !== passwordConfirm) {
+        alert('パスワードが一致しません')
+        return
+    }
+
+    if (password.length < 8) {
+        alert('パスワードは8文字以上で設定してください')
+        return
+    }
+
+    const btn = document.getElementById('signupBtn')
+    btn.textContent = '登録中...'
+    btn.disabled = true
+
+    const { data, error } = await supabaseAuth.auth.signUp({
+        email,
+        password,
+        options: {
+            emailRedirectTo: 'https://yahoo-shopping-frontend.vercel.app/auth/callback'
+        }
+    })
+
+    if (error) {
+        alert('登録エラー: ' + error.message)
+        btn.textContent = '登録する（7日間無料）'
+        btn.disabled = false
+    } else {
+        alert('✅ 確認メールを送信しました！\nメールのリンクをクリックして登録を完了してください。')
+        switchAuthTab('login')
+        btn.textContent = '登録する（7日間無料）'
+        btn.disabled = false
+    }
+}
+
+// ログアウト処理
+window.handleLogout = async function() {
+    if (confirm('ログアウトしますか？')) {
+        await supabaseAuth.auth.signOut()
+    }
+}
+
+// パスワードリセット画面表示
+window.showPasswordReset = function() {
+    document.getElementById('loginForm').style.display = 'none'
+    document.getElementById('signupForm').style.display = 'none'
+    document.getElementById('resetForm').style.display = 'block'
+}
+
+// ログインフォームに戻る
+window.showLoginForm = function() {
+    switchAuthTab('login')
+}
+
+// パスワードリセット処理
+window.handlePasswordReset = async function() {
+    const email = document.getElementById('resetEmail').value.trim()
+
+    if (!email) {
+        alert('メールアドレスを入力してください')
+        return
+    }
+
+    const btn = document.getElementById('resetBtn')
+    btn.textContent = '送信中...'
+    btn.disabled = true
+
+    const { error } = await supabaseAuth.auth.resetPasswordForEmail(email, {
+        redirectTo: 'https://yahoo-shopping-frontend.vercel.app/auth/callback'
+    })
+
+    if (error) {
+        alert('エラー: ' + error.message)
+    } else {
+        alert('✅ パスワードリセット用のメールを送信しました！')
+        showLoginForm()
+    }
+
+    btn.textContent = 'リセットリンクを送信'
+    btn.disabled = false
+}
+
+// CSV行数制限チェック
+window.checkCsvLimit = function(rowCount) {
+    const limits = {
+        starter: 100,
+        standard: 300,
+        premium: 999999
+    }
+
+    const limit = limits[currentPlan] || 100
+
+    if (rowCount > limit) {
+        alert(`⚠️ プラン制限\n\n${currentPlan}プランは最大${limit}行までです。\n\nアップグレードしてください。`)
+        return false
+    }
+
+    return true
+}
+
+// 初期化処理を更新
+document.addEventListener('DOMContentLoaded', async () => {
+    // セッションチェック
+    const { data: { session } } = await supabaseAuth.auth.getSession()
+
+    if (!session) {
+        // 未ログイン → 認証モーダル表示
+        document.getElementById('authModal').style.display = 'flex'
+        return
+    }
+
+    // ログイン済み → 既存の初期化処理
     yahooApiKey = localStorage.getItem('yahooApiKey');
 
     if (!yahooApiKey) {
@@ -115,6 +337,17 @@ async function startBatchSearch() {
 
         if (csvData.length === 0) {
             throw new Error('CSVデータが空です');
+        }
+
+        // プラン制限チェック
+        if (!window.checkCsvLimit(csvData.length)) {
+            // 統計カードをリセット
+            const statCards = document.querySelectorAll('.stat-card');
+            statCards.forEach(card => {
+                card.classList.remove('searching');
+            });
+            resultsDiv.innerHTML = '';
+            return;
         }
 
         // 検索実行

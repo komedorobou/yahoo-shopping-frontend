@@ -8,6 +8,72 @@
     <link rel="stylesheet" href="fusion-studio.css">
 </head>
 <body>
+    <!-- 認証モーダル -->
+    <div id="authModal" class="api-modal" style="display: none;">
+        <div class="api-modal-content" style="max-width: 450px;">
+            <h2 style="text-align: center; margin-bottom: 30px;">🔐 PROFIT MATRIX</h2>
+
+            <!-- タブ切り替え -->
+            <div style="display: flex; gap: 10px; margin-bottom: 25px;">
+                <button id="loginTab" onclick="switchAuthTab('login')"
+                        style="flex: 1; padding: 12px; background: linear-gradient(135deg, #00FFA3 0%, #00B8D9 100%); border: none; border-radius: 8px; color: #000; font-weight: 700; cursor: pointer;">
+                    ログイン
+                </button>
+                <button id="signupTab" onclick="switchAuthTab('signup')"
+                        style="flex: 1; padding: 12px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white; font-weight: 600; cursor: pointer;">
+                    新規登録
+                </button>
+            </div>
+
+            <!-- ログインフォーム -->
+            <div id="loginForm">
+                <input type="email" id="loginEmail" placeholder="メールアドレス"
+                       style="width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(17, 24, 39, 0.8); border: 1px solid rgba(0, 255, 163, 0.3); border-radius: 5px; color: white; font-size: 16px;" />
+                <input type="password" id="loginPassword" placeholder="パスワード"
+                       style="width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(17, 24, 39, 0.8); border: 1px solid rgba(0, 255, 163, 0.3); border-radius: 5px; color: white; font-size: 16px;" />
+                <button id="loginBtn" onclick="handleLogin()" class="api-save-btn" style="width: 100%; margin-bottom: 15px;">
+                    ログイン
+                </button>
+                <a href="#" onclick="showPasswordReset(); return false;"
+                   style="display: block; text-align: center; color: #00FFA3; text-decoration: underline; font-size: 14px;">
+                    パスワードを忘れた方
+                </a>
+            </div>
+
+            <!-- 新規登録フォーム -->
+            <div id="signupForm" style="display: none;">
+                <input type="email" id="signupEmail" placeholder="メールアドレス"
+                       style="width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(17, 24, 39, 0.8); border: 1px solid rgba(0, 255, 163, 0.3); border-radius: 5px; color: white; font-size: 16px;" />
+                <input type="password" id="signupPassword" placeholder="パスワード（8文字以上）"
+                       style="width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(17, 24, 39, 0.8); border: 1px solid rgba(0, 255, 163, 0.3); border-radius: 5px; color: white; font-size: 16px;" />
+                <input type="password" id="signupPasswordConfirm" placeholder="パスワード確認"
+                       style="width: 100%; padding: 12px; margin-bottom: 20px; background: rgba(17, 24, 39, 0.8); border: 1px solid rgba(0, 255, 163, 0.3); border-radius: 5px; color: white; font-size: 16px;" />
+                <button id="signupBtn" onclick="handleSignup()" class="api-save-btn" style="width: 100%; margin-bottom: 15px;">
+                    登録する（7日間無料）
+                </button>
+                <p style="font-size: 12px; color: rgba(148, 163, 184, 0.9); text-align: center; margin: 0;">
+                    登録すると<a href="#" style="color: #00FFA3;">利用規約</a>に同意したことになります
+                </p>
+            </div>
+
+            <!-- パスワードリセットフォーム -->
+            <div id="resetForm" style="display: none;">
+                <p style="color: rgba(148, 163, 184, 0.9); margin-bottom: 20px; text-align: center;">
+                    登録済みのメールアドレスを入力してください
+                </p>
+                <input type="email" id="resetEmail" placeholder="メールアドレス"
+                       style="width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(17, 24, 39, 0.8); border: 1px solid rgba(0, 255, 163, 0.3); border-radius: 5px; color: white; font-size: 16px;" />
+                <button id="resetBtn" onclick="handlePasswordReset()" class="api-save-btn" style="width: 100%; margin-bottom: 15px;">
+                    リセットリンクを送信
+                </button>
+                <a href="#" onclick="showLoginForm(); return false;"
+                   style="display: block; text-align: center; color: #00FFA3; text-decoration: underline; font-size: 14px;">
+                    ← ログインに戻る
+                </a>
+            </div>
+        </div>
+    </div>
+
     <!-- APIキー設定モーダル -->
     <div id="apiKeyModal" class="api-modal" style="display: none;">
         <div class="api-modal-content">
@@ -142,6 +208,15 @@
                 </button>
             </div>
         </div>
+    </div>
+
+    <!-- ユーザーメニュー（ログアウトボタン） -->
+    <div style="position: fixed; top: 20px; right: 20px; z-index: 1000; display: none;" id="userMenu">
+        <span id="userEmail" style="color: white; margin-right: 15px; font-size: 14px;"></span>
+        <button onclick="handleLogout()"
+                style="padding: 8px 16px; background: rgba(255, 107, 157, 0.2); border: 1px solid rgba(255, 107, 157, 0.4); border-radius: 5px; color: white; cursor: pointer;">
+            ログアウト
+        </button>
     </div>
 
     <div class="container">
