@@ -160,17 +160,10 @@ window.handleLogin = async function() {
     try {
         console.log('📡 Supabaseに認証リクエスト送信中...')
 
-        // タイムアウト処理（10秒）
-        const timeoutPromise = new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('タイムアウト: 10秒以内に応答がありませんでした')), 10000)
-        )
-
-        const loginPromise = supabaseAuth.auth.signInWithPassword({
+        const { data, error } = await supabaseAuth.auth.signInWithPassword({
             email,
             password
         })
-
-        const { data, error } = await Promise.race([loginPromise, timeoutPromise])
 
         if (error) {
             console.error('❌ ログインエラー:', error)
@@ -193,7 +186,8 @@ window.handleLogin = async function() {
         }
     } catch (error) {
         console.error('❌ ログイン処理で例外発生:', error)
-        alert('ログインエラー: ' + error.message)
+        console.error('エラー詳細:', error.message, error.stack)
+        alert('ログインエラー: ' + (error.message || '不明なエラーが発生しました'))
         btn.textContent = 'ログイン'
         btn.disabled = false
     }
