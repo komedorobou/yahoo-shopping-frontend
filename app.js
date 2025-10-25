@@ -229,12 +229,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     const { data: { session } } = await supabaseAuth.auth.getSession()
 
     if (!session) {
-        // 未ログイン → 認証モーダル表示
-        document.getElementById('authModal').style.display = 'flex'
+        // 未ログイン → 認証モーダル表示（既にHTMLで表示されている）
+        console.log('未ログイン: 認証モーダル表示')
         return
     }
 
-    // ログイン済み → 既存の初期化処理
+    // ログイン済み → 認証モーダルを非表示
+    console.log('ログイン済み: 認証モーダル非表示')
+    document.getElementById('authModal').style.display = 'none'
+
+    // 既存の初期化処理
     yahooApiKey = localStorage.getItem('yahooApiKey');
 
     if (!yahooApiKey) {
