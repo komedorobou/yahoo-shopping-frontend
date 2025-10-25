@@ -383,7 +383,7 @@ function removeFile(index) {
     updateFileList();
 }
 
-function clearAll() {
+window.clearAll = function() {
     csvFiles = [];
     mergedData = [];
     window.mergedData = []; // グローバル変数もクリア
@@ -422,7 +422,7 @@ function parseFusionCSV(content) {
     });
 }
 
-function mergeCSV() {
+window.mergeCSV = function() {
     console.log('[Fusion Studio] mergeCSV 呼び出し, csvFiles:', csvFiles.length);
 
     if (csvFiles.length === 0) {
@@ -588,7 +588,7 @@ function smoothScrollToPosition(targetPosition) {
 }
 
 // クリーニング機能
-function showCleaningModal() {
+window.showCleaningModal = function() {
     // デバッグ情報を表示
     const debugInfo = document.getElementById('debugInfo');
     if (mergedData.length > 0 && mergedData[0]) {
@@ -622,12 +622,12 @@ function showCleaningModal() {
     document.getElementById('cleaningStats').style.display = 'none';
 }
 
-function closeCleaningModal() {
+window.closeCleaningModal = function() {
     document.getElementById('cleaningModal').style.display = 'none';
 }
 
 // 商品グループ化モーダル
-function showGroupingModal() {
+window.showGroupingModal = function() {
     if (mergedData.length === 0) {
         showError('先にCSVを結合してください');
         return;
@@ -638,7 +638,7 @@ function showGroupingModal() {
     document.getElementById('groupingStats').style.display = 'none';
 }
 
-function closeGroupingModal() {
+window.closeGroupingModal = function() {
     document.getElementById('groupingModal').style.display = 'none';
 }
 
@@ -784,7 +784,7 @@ function calculateSimilarity(str1, str2) {
 }
 
 // グループ化のプレビュー
-function previewGrouping() {
+window.previewGrouping = function() {
     const includeHeaders = document.getElementById('includeHeaders').checked;
     const startRow = includeHeaders ? 1 : 0;
     const threshold = parseInt(document.getElementById('similarityThreshold').value);
@@ -1027,7 +1027,7 @@ function sortItemsByColorSize(nameA, nameB) {
 }
 
 // グループ化を適用（B列挿入版）
-function applyGrouping() {
+window.applyGrouping = function() {
     if (!groupedData || groupedData.length === 0) {
         showError('先にプレビューを実行してください');
         return;
@@ -1400,7 +1400,7 @@ function analyzeDistributionPattern(binsToShow, totalBins) {
 /**
  * グループを集計して1行にまとめる（価格分布対応版）
  */
-function generateGroupSummary() {
+window.generateGroupSummary = function() {
     if (!isGrouped || !groupedData || groupedData.length === 0) {
         showError('先に商品グループ化を実行してください');
         return;
@@ -1761,7 +1761,7 @@ function cleanProductName(text) {
     return cleaned;
 }
 
-function previewCleaning() {
+window.previewCleaning = function() {
     if (mergedData.length === 0) {
         showError('先にCSVを結合してください');
         return;
@@ -1840,7 +1840,7 @@ function previewCleaning() {
     document.getElementById('cleaningStats').style.display = 'flex';
 }
 
-function applyCleaning() {
+window.applyCleaning = function() {
     if (mergedData.length === 0) {
         showError('先にCSVを結合してください');
         return;
@@ -1994,7 +1994,7 @@ function displayPreview() {
     previewSection.style.display = 'block';
 }
 
-function downloadCSV() {
+window.downloadCSV = function() {
     if (mergedData.length === 0) {
         showError('ダウンロードするデータがありません');
         return;
@@ -2112,7 +2112,7 @@ function jaccard(set1, set2) {
 const RISKY_SHORT_BRANDS = new Set(['js', 'ua', 'by', 'cos', 'tan', 'eg', 'mm6', 'ap']);
 const FUZZY_THRESHOLD = 0.75; // あいまい一致の闾値（75%の類似度）
 
-function processBrands() {
+window.processBrands = function() {
     if (mergedData.length === 0) {
         showError('先にCSVを結合してください');
         return;

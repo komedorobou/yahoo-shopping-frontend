@@ -759,7 +759,7 @@ function updateSelectedCount() {
 let selectedPartnerId = null; // 選択された送信先
 
 // 送信モーダルを開く
-function openSendModal() {
+window.openSendModal = function() {
     if (selectedProducts.length === 0) {
         alert('商品が選択されていません');
         return;
@@ -776,7 +776,7 @@ function openSendModal() {
 }
 
 // 送信モーダルを閉じる
-function closeSendModal() {
+window.closeSendModal = function() {
     document.getElementById('sendModal').style.display = 'none';
     selectedPartnerId = null;
 }
@@ -850,7 +850,7 @@ function selectPartner(index) {
 }
 
 // 送信確認
-async function confirmSend() {
+window.confirmSend = async function() {
     if (selectedPartnerId === null) {
         alert('送信先を選択してください');
         return;
@@ -1011,7 +1011,7 @@ function savePartnersToStorage() {
 }
 
 // 外注先管理モーダルを開く
-async function openPartnersModal() {
+window.openPartnersModal = async function() {
     document.getElementById('partnersModal').style.display = 'flex';
     await loadPartnersFromStorage(); // Supabaseから外注先リストを読み込み
     displayPartnersList();
@@ -1021,7 +1021,7 @@ async function openPartnersModal() {
 }
 
 // 外注先管理モーダルを閉じる
-function closePartnersModal() {
+window.closePartnersModal = function() {
     document.getElementById('partnersModal').style.display = 'none';
     cancelPartnerForm(); // フォームを閉じる
 }
@@ -1124,7 +1124,7 @@ function toggleSendMethodFields() {
 }
 
 // 追加フォームを表示
-function showAddPartnerForm() {
+window.showAddPartnerForm = function() {
     const form = document.getElementById('partnerForm');
     const formTitle = document.getElementById('formTitle');
 
@@ -1141,7 +1141,7 @@ function showAddPartnerForm() {
 }
 
 // フォームをキャンセル
-function cancelPartnerForm() {
+window.cancelPartnerForm = function() {
     const form = document.getElementById('partnerForm');
     form.style.display = 'none';
 
@@ -1154,7 +1154,7 @@ function cancelPartnerForm() {
 }
 
 // 外注先を保存（新規追加または更新）
-async function savePartner() {
+window.savePartner = async function() {
     const name = document.getElementById('partnerName').value.trim();
     const email = document.getElementById('partnerEmail').value.trim();
     const lineId = document.getElementById('partnerLineId').value.trim();
@@ -1294,7 +1294,7 @@ async function deletePartner(index) {
 // ========================================
 
 // タブ切り替え
-function switchPartnerTab(tabName) {
+window.switchPartnerTab = function(tabName) {
     currentPartnerTab = tabName;
 
     const approvedTab = document.getElementById('approvedTab');
@@ -1516,7 +1516,7 @@ document.getElementById('batchSearchBtn').addEventListener('click', startBatchSe
 // モード切替機能
 // ========================================
 
-function switchMode(mode) {
+window.switchMode = function(mode) {
     console.log('switchMode called with:', mode);
 
     // すべてのタブを非アクティブ化
