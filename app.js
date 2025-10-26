@@ -216,7 +216,7 @@ window.handleSignup = async function() {
         email,
         password,
         options: {
-            emailRedirectTo: 'https://yahoo-shopping-frontend.vercel.app/auth/callback'
+            emailRedirectTo: 'https://yahoo-shopping-frontend.vercel.app/'
         }
     })
 
@@ -265,7 +265,7 @@ window.handlePasswordReset = async function() {
     btn.disabled = true
 
     const { error } = await supabaseAuth.auth.resetPasswordForEmail(email, {
-        redirectTo: 'https://yahoo-shopping-frontend.vercel.app/auth/callback'
+        redirectTo: 'https://yahoo-shopping-frontend.vercel.app/'
     })
 
     if (error) {
@@ -299,6 +299,18 @@ window.checkCsvLimit = function(rowCount) {
 
 // 初期化処理を更新
 document.addEventListener('DOMContentLoaded', async () => {
+    console.log('🚀 アプリ初期化開始')
+
+    // URLハッシュをチェック（メール確認後のリダイレクト処理）
+    const hash = window.location.hash
+    if (hash && hash.includes('access_token')) {
+        console.log('🔗 メール確認リダイレクトを検出')
+        // ハッシュをクリア（URLをきれいに）
+        window.history.replaceState(null, '', window.location.pathname)
+        // Supabaseが自動的に処理してくれるので待機
+        await new Promise(resolve => setTimeout(resolve, 1000))
+    }
+
     // セッションチェック
     const { data: { session } } = await supabaseAuth.auth.getSession()
 
