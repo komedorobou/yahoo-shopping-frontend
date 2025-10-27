@@ -279,6 +279,58 @@ window.handlePasswordReset = async function() {
     btn.disabled = false
 }
 
+// パスワード更新処理（リセットメールからのリンク用）
+window.handlePasswordUpdate = async function() {
+    const newPassword = document.getElementById('newPassword').value
+    const newPasswordConfirm = document.getElementById('newPasswordConfirm').value
+
+    if (!newPassword || !newPasswordConfirm) {
+        alert('全ての項目を入力してください')
+        return
+    }
+
+    if (newPassword !== newPasswordConfirm) {
+        alert('パスワードが一致しません')
+        return
+    }
+
+    if (newPassword.length < 8) {
+        alert('パスワードは8文字以上で設定してください')
+        return
+    }
+
+    const btn = document.getElementById('updatePasswordBtn')
+    btn.textContent = '更新中...'
+    btn.disabled = true
+
+    try {
+        const { error } = await supabaseAuth.auth.updateUser({
+            password: newPassword
+        })
+
+        if (error) {
+            alert('エラー: ' + error.message)
+            btn.textContent = 'パスワードを更新'
+            btn.disabled = false
+        } else {
+            alert('✅ パスワードを更新しました！\nログインしてください。')
+            // パスワードリセットモーダルを閉じる
+            document.getElementById('resetPasswordModal').style.display = 'none'
+            // 認証モーダルを表示
+            document.getElementById('authModal').style.display = 'flex'
+            // ログインタブに切り替え
+            switchAuthTab('login')
+            // URLハッシュをクリア
+            window.history.replaceState(null, '', window.location.pathname)
+        }
+    } catch (error) {
+        console.error('❌ パスワード更新エラー:', error)
+        alert('パスワード更新エラー: ' + (error.message || '不明なエラーが発生しました'))
+        btn.textContent = 'パスワードを更新'
+        btn.disabled = false
+    }
+}
+
 // CSV行数制限チェック
 window.checkCsvLimit = function(rowCount) {
     const limits = {
@@ -301,8 +353,20 @@ window.checkCsvLimit = function(rowCount) {
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('🚀 アプリ初期化開始')
 
-    // URLハッシュをチェック（メール確認後のリダイレクト処理）
+    // URLハッシュをチェック
     const hash = window.location.hash
+
+    // パスワードリセット処理
+    if (hash && hash.includes('type=recovery')) {
+        console.log('🔑 パスワードリセットリンクを検出')
+        // 認証モーダルを非表示
+        document.getElementById('authModal').style.display = 'none'
+        // パスワードリセットモーダルを表示
+        document.getElementById('resetPasswordModal').style.display = 'flex'
+        return
+    }
+
+    // メール確認後のリダイレクト処理
     if (hash && hash.includes('access_token')) {
         console.log('🔗 メール確認リダイレクトを検出')
         // ハッシュをクリア（URLをきれいに）

@@ -75,6 +75,27 @@
         </div>
     </div>
 
+    <!-- パスワードリセット用モーダル（新しいパスワード入力） -->
+    <div id="resetPasswordModal" class="api-modal" style="display: none;">
+        <div class="api-modal-content" style="max-width: 450px;">
+            <h2 style="text-align: center; margin-bottom: 30px;">🔑 新しいパスワード設定</h2>
+
+            <p style="color: rgba(148, 163, 184, 0.9); margin-bottom: 25px; text-align: center;">
+                新しいパスワードを入力してください
+            </p>
+
+            <input type="password" id="newPassword" placeholder="新しいパスワード（8文字以上）"
+                   style="width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(17, 24, 39, 0.8); border: 1px solid rgba(0, 255, 163, 0.3); border-radius: 5px; color: white; font-size: 16px;" />
+
+            <input type="password" id="newPasswordConfirm" placeholder="新しいパスワード確認"
+                   style="width: 100%; padding: 12px; margin-bottom: 20px; background: rgba(17, 24, 39, 0.8); border: 1px solid rgba(0, 255, 163, 0.3); border-radius: 5px; color: white; font-size: 16px;" />
+
+            <button id="updatePasswordBtn" onclick="handlePasswordUpdate()" class="api-save-btn" style="width: 100%;">
+                パスワードを更新
+            </button>
+        </div>
+    </div>
+
     <!-- APIキー設定モーダル -->
     <div id="apiKeyModal" class="api-modal" style="display: none;">
         <div class="api-modal-content">
