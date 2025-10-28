@@ -341,6 +341,8 @@ window.checkYahooSearchLimit = function(currentCount) {
 
     const limit = limits[currentPlan] || 100
 
+    console.log(`🔍 Yahoo検索制限チェック: 現在のプラン=${currentPlan}, 制限=${limit}件, 現在の件数=${currentCount}件`)
+
     if (currentCount >= limit) {
         alert(`⚠️ プラン制限\n\n${currentPlan}プランはYahoo検索結果が最大${limit}件までです。\n\nアップグレードしてください。`)
         return false
@@ -455,6 +457,10 @@ async function startBatchSearch() {
         alert('CSVファイルを選択してください');
         return;
     }
+
+    // デバッグ: 現在のプラン情報を確認
+    console.log(`🎫 検索開始時のプラン情報: currentPlan=${currentPlan}`)
+    console.log(`📋 localStorage.profitMatrixPlan=${localStorage.getItem('profitMatrixPlan')}`)
 
     const resultsDiv = document.getElementById('searchResults');
     resultsDiv.innerHTML = `
