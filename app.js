@@ -331,25 +331,6 @@ window.handlePasswordUpdate = async function() {
     }
 }
 
-// Yahoo検索結果数制限チェック
-window.checkYahooSearchLimit = function(currentCount) {
-    const limits = {
-        starter: 100,
-        standard: 300,
-        premium: 999999
-    }
-
-    const limit = limits[currentPlan] || 100
-
-    console.log(`🔍 Yahoo検索制限チェック: 現在のプラン=${currentPlan}, 制限=${limit}件, 現在の件数=${currentCount}件`)
-
-    if (currentCount >= limit) {
-        alert(`⚠️ プラン制限\n\n${currentPlan}プランはYahoo検索結果が最大${limit}件までです。\n\nアップグレードしてください。`)
-        return false
-    }
-
-    return true
-}
 
 // 初期化処理を更新
 document.addEventListener('DOMContentLoaded', async () => {
@@ -499,6 +480,21 @@ async function startBatchSearch() {
             throw new Error('CSVデータが空です');
         }
 
+        // プラン別の検索行数制限を適用
+        const limits = {
+            starter: 100,
+            standard: 300,
+            premium: 999999
+        };
+        const maxSearchRows = limits[currentPlan] || 100;
+        const limitedData = csvData.slice(0, maxSearchRows);
+
+        // 制限がかかっている場合は通知
+        if (csvData.length > maxSearchRows) {
+            console.log(`⚠️ プラン制限: ${csvData.length}行中、${maxSearchRows}行のみ検索します`);
+            alert(`📊 プラン制限\n\nCSVファイルは${csvData.length}行ありますが、\n${currentPlan}プランでは最大${maxSearchRows}行まで検索できます。\n\n先頭${maxSearchRows}行のみ検索を実行します。`);
+        }
+
         // 検索実行
         let completed = 0;
         let cardIndex = 0; // カードのインデックス
@@ -507,7 +503,7 @@ async function startBatchSearch() {
         resultsDiv.innerHTML = '';
         resultsDiv.appendChild(resultsContainer);
 
-        for (const item of csvData) {
+        for (const item of limitedData) {
             completed++;
 
             // 検索中の商品を表示
@@ -516,7 +512,7 @@ async function startBatchSearch() {
             const searchProgress = document.getElementById('searchProgress');
             currentSearchDiv.style.display = 'block';
             currentSearchText.textContent = `${item.brand} ${item.item || ''}`;
-            searchProgress.textContent = `${completed}/${csvData.length}`;
+            searchProgress.textContent = `${completed}/${limitedData.length}`;
 
             // 検索実行
             const results = await searchYahooShopping(item);
@@ -526,16 +522,10 @@ async function startBatchSearch() {
                 results.forEach(result => {
                     appendResultCard(resultsContainer, result, cardIndex++);
                 });
-
-                // Yahoo検索結果数の制限チェック
-                if (!window.checkYahooSearchLimit(searchResults.length)) {
-                    // 制限に達したら検索を中断
-                    break;
-                }
             }
 
             // 統計更新
-            updateStats(completed, csvData.length);
+            updateStats(completed, limitedData.length);
 
             // API制限対策: 2秒待機 (Yahoo API: 30req/min制限)
             await sleep(2000);
