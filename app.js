@@ -331,8 +331,8 @@ window.handlePasswordUpdate = async function() {
     }
 }
 
-// CSV行数制限チェック
-window.checkCsvLimit = function(rowCount) {
+// Yahoo検索結果数制限チェック
+window.checkYahooSearchLimit = function(currentCount) {
     const limits = {
         starter: 100,
         standard: 300,
@@ -341,8 +341,8 @@ window.checkCsvLimit = function(rowCount) {
 
     const limit = limits[currentPlan] || 100
 
-    if (rowCount > limit) {
-        alert(`⚠️ プラン制限\n\n${currentPlan}プランは最大${limit}行までです。\n\nアップグレードしてください。`)
+    if (currentCount >= limit) {
+        alert(`⚠️ プラン制限\n\n${currentPlan}プランはYahoo検索結果が最大${limit}件までです。\n\nアップグレードしてください。`)
         return false
     }
 
@@ -493,17 +493,6 @@ async function startBatchSearch() {
             throw new Error('CSVデータが空です');
         }
 
-        // プラン制限チェック
-        if (!window.checkCsvLimit(csvData.length)) {
-            // 統計カードをリセット
-            const statCards = document.querySelectorAll('.stat-card');
-            statCards.forEach(card => {
-                card.classList.remove('searching');
-            });
-            resultsDiv.innerHTML = '';
-            return;
-        }
-
         // 検索実行
         let completed = 0;
         let cardIndex = 0; // カードのインデックス
@@ -531,6 +520,12 @@ async function startBatchSearch() {
                 results.forEach(result => {
                     appendResultCard(resultsContainer, result, cardIndex++);
                 });
+
+                // Yahoo検索結果数の制限チェック
+                if (!window.checkYahooSearchLimit(searchResults.length)) {
+                    // 制限に達したら検索を中断
+                    break;
+                }
             }
 
             // 統計更新

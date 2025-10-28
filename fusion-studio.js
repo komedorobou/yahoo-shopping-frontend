@@ -528,14 +528,6 @@ window.mergeCSV = function() {
         // グローバル変数を最終的に更新
         window.mergedData = mergedData;
 
-        // プラン制限チェック（ヘッダー行を除外）
-        const dataRowCount = mergedData.length > 0 ? mergedData.length - 1 : 0;
-        if (window.checkCsvLimit && !window.checkCsvLimit(dataRowCount)) {
-            mergedData = [];
-            window.mergedData = [];
-            return;
-        }
-
         console.log('[Fusion Studio] displayPreview呼び出し');
         console.log('[Fusion Studio] mergedData サンプル（最初の3行）:');
         mergedData.slice(0, 3).forEach((row, i) => {
