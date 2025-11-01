@@ -185,8 +185,8 @@ Deuxieme Classe,ウールアンゴラリバーコート,,49000
 
 ```bash
 # リポジトリクローン
-git clone https://github.com/your-username/yahoo-shopping-frontend.git
-cd yahoo-shopping-frontend
+git clone https://github.com/komedorobou/profit-matrix.git
+cd profit-matrix
 
 # ブラウザで開く
 open index.html
