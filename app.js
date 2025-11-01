@@ -216,7 +216,7 @@ window.handleSignup = async function() {
         email,
         password,
         options: {
-            emailRedirectTo: 'https://yahoo-shopping-frontend.vercel.app/'
+            emailRedirectTo: 'https://profit-matrix.vercel.app/'
         }
     })
 
@@ -265,7 +265,7 @@ window.handlePasswordReset = async function() {
     btn.disabled = true
 
     const { error } = await supabaseAuth.auth.resetPasswordForEmail(email, {
-        redirectTo: 'https://yahoo-shopping-frontend.vercel.app/'
+        redirectTo: 'https://profit-matrix.vercel.app/'
     })
 
     if (error) {
